@@ -118,10 +118,10 @@
         <div class="hidden md:block p-3.5 rounded-2xl border border-neutral-700/50 bg-neutral-800/40">
           <div class="flex items-center gap-2 text-xs font-semibold mb-1">
             <i class="fa-solid fa-circle-check text-emerald-400"></i>
-            <span class="text-emerald-300">Video Player Ready</span>
+            <span class="text-emerald-300">Playlists Saved</span>
           </div>
           <p class="text-[11px] text-neutral-400 leading-normal">
-            Select any video, save it to a playlist, or toggle shuffle for continuous random playback.
+            Your custom playlists are automatically backed up and saved across page reloads!
           </p>
         </div>
       </div>
@@ -390,7 +390,7 @@
   </div>
 
   <!-- Sleep Timer Modal -->
-  <div id="sleep-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div id="sleep-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center z-50 p-4">
     <div class="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 max-w-sm w-full space-y-5 shadow-2xl">
       <div class="flex items-center justify-between">
         <h3 class="text-lg font-bold flex items-center gap-2">
@@ -471,6 +471,88 @@
     let sleepTimerMins = 0;
     let sleepTimerInterval = null;
 
+    // IndexedDB & Storage Fallback Engine
+    const DB_NAME = 'SoundStreamDB';
+    const DB_VERSION = 1;
+    let dbInstance = null;
+
+    function initDB() {
+      return new Promise((resolve) => {
+        if (!window.indexedDB) {
+          resolve(false);
+          return;
+        }
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('store')) {
+            db.createObjectStore('store');
+          }
+        };
+        req.onsuccess = (e) => {
+          dbInstance = e.target.result;
+          resolve(true);
+        };
+        req.onerror = () => resolve(false);
+      });
+    }
+
+    async function saveToDB(key, data) {
+      if (dbInstance) {
+        try {
+          const tx = dbInstance.transaction('store', 'readwrite');
+          tx.objectStore('store').put(data, key);
+        } catch(e) {}
+      }
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    async function loadFromDB(key) {
+      if (dbInstance) {
+        try {
+          const val = await new Promise((resolve) => {
+            const tx = dbInstance.transaction('store', 'readonly');
+            const req = tx.objectStore('store').get(key);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+          });
+          if (val) return val;
+        } catch (e) {}
+      }
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function loadSavedData() {
+      await initDB();
+      const savedPlaylists = await loadFromDB('soundstream_playlists');
+      if (Array.isArray(savedPlaylists)) {
+        playlists = savedPlaylists;
+      }
+      const savedApiKey = await loadFromDB('soundstream_apikey');
+      if (savedApiKey) {
+        apiKey = savedApiKey;
+      }
+      renderPlaylists();
+      if (document.getElementById('api-key-input')) {
+        document.getElementById('api-key-input').value = apiKey || '';
+      }
+    }
+
+    function savePlaylistsToStorage() {
+      saveToDB('soundstream_playlists', playlists);
+    }
+
+    function saveApiKeyToStorage() {
+      saveToDB('soundstream_apikey', apiKey);
+    }
+
     // Helper: Format Seconds
     function formatSecs(sec) {
       if (isNaN(sec) || sec <= 0) return '0:00';
@@ -493,9 +575,8 @@
     // Initialize Page
     document.addEventListener('DOMContentLoaded', () => {
       renderDiscoverTab();
-      renderPlaylists();
       setupEventListeners();
-      document.getElementById('api-key-input').value = apiKey;
+      loadSavedData();
     });
 
     // Event Listeners setup
@@ -577,6 +658,7 @@
       });
       document.getElementById('save-api-key-btn').addEventListener('click', () => {
         apiKey = document.getElementById('api-key-input').value.trim();
+        saveApiKeyToStorage();
         document.getElementById('api-key-modal').classList.add('hidden');
       });
 
@@ -597,6 +679,7 @@
           });
           document.getElementById('playlist-name-input').value = '';
           document.getElementById('playlist-modal').classList.add('hidden');
+          savePlaylistsToStorage();
           renderPlaylists();
         }
       });
@@ -784,6 +867,7 @@
 
     function deletePlaylist(playlistId) {
       playlists = playlists.filter(p => p.id !== playlistId);
+      savePlaylistsToStorage();
       renderPlaylists();
     }
 
@@ -791,6 +875,7 @@
       const pl = playlists.find(p => p.id === playlistId);
       if (pl) {
         pl.tracks = pl.tracks.filter(t => t.id !== trackId);
+        savePlaylistsToStorage();
         renderPlaylists();
       }
     }
@@ -818,6 +903,7 @@
       if (pl && selectedTrackToAddToPlaylist) {
         if (!pl.tracks.some(t => t.id === selectedTrackToAddToPlaylist.id)) {
           pl.tracks.push(selectedTrackToAddToPlaylist);
+          savePlaylistsToStorage();
           renderPlaylists();
         }
       }
