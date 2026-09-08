@@ -110,11 +110,12 @@
       
       <button 
         id="settings-btn"
-        class="p-2.5 rounded-full border border-neutral-700/50 bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300 transition-all flex items-center gap-1.5 text-xs font-medium"
+        class="p-2.5 rounded-full border border-neutral-700/50 bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300 transition-all flex items-center gap-1.5 text-xs font-medium relative"
         title="API Settings"
       >
-        <i class="fa-solid fa-key text-amber-400"></i>
-        <span class="hidden sm:inline">API Key</span>
+        <i id="api-key-icon" class="fa-solid fa-key text-amber-400"></i>
+        <span id="api-key-label" class="hidden sm:inline">API Key</span>
+        <span id="api-status-badge" class="hidden w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span>
       </button>
     </div>
   </header>
@@ -140,14 +141,6 @@
           >
             <i class="fa-solid fa-magnifying-glass text-lg"></i>
             <span class="hidden md:inline">Search Videos</span>
-          </button>
-
-          <button 
-            data-tab="lyrics"
-            class="tab-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 hover:scale-[1.02]"
-          >
-            <i class="fa-solid fa-align-left text-lg"></i>
-            <span class="hidden md:inline">Lyrics</span>
           </button>
 
           <button 
@@ -253,56 +246,6 @@
         <div id="search-results-list" class="space-y-3"></div>
       </section>
 
-      <!-- LYRICS TAB CONTENT -->
-      <section id="tab-lyrics" class="tab-content hidden space-y-6">
-        <div class="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h2 class="text-2xl font-bold">Lyrics & Song Info</h2>
-            <p class="text-sm text-neutral-400">View song lyrics, themes, and details for the currently playing track.</p>
-          </div>
-          <a 
-            id="google-lyrics-btn" 
-            href="#" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            class="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 text-xs font-semibold flex items-center gap-2 transition-all border border-neutral-700/80 hover:border-neutral-600 shadow-md hover:scale-105"
-          >
-            <i class="fa-solid fa-arrow-up-right-from-square text-red-400"></i> Full Lyrics on Google
-          </a>
-        </div>
-
-        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xl relative overflow-hidden">
-          <div class="flex items-center gap-4 border-b border-neutral-800/80 pb-5">
-            <img id="lyrics-thumb" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&q=80" alt="Track Thumbnail" class="w-16 h-16 rounded-2xl object-cover border border-neutral-700/60 shadow-lg shrink-0" />
-            <div class="overflow-hidden">
-              <h3 id="lyrics-track-title" class="text-xl font-bold text-white truncate">No Track Selected</h3>
-              <p id="lyrics-track-artist" class="text-sm text-neutral-400 truncate mt-0.5">Select a video to view lyrics</p>
-            </div>
-          </div>
-
-          <!-- Lyrics Display Box -->
-          <div id="lyrics-content-area" class="space-y-4">
-            <div class="p-4 rounded-2xl bg-neutral-950/60 border border-neutral-800/80">
-              <h4 class="text-xs font-semibold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-info"></i> Track Theme & Overview
-              </h4>
-              <p id="lyrics-theme-text" class="text-sm text-neutral-300 leading-relaxed">
-                Start playing a song or video from the Discover or Search tabs to view its lyrics and summary information.
-              </p>
-            </div>
-
-            <div class="p-6 rounded-2xl bg-neutral-950/80 border border-neutral-800 space-y-3">
-              <h4 class="text-xs font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                <i class="fa-solid fa-quote-left text-red-500"></i> Song Lyrics Excerpt
-              </h4>
-              <div id="lyrics-text-lines" class="text-neutral-200 text-sm md:text-base leading-relaxed font-sans whitespace-pre-line italic bg-neutral-900/50 p-4 rounded-xl border border-neutral-800/50">
-                No lyrics currently loaded.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- PLAYLISTS TAB CONTENT -->
       <section id="tab-playlists" class="tab-content hidden space-y-6">
         <div class="flex items-center justify-between">
@@ -346,18 +289,20 @@
     <!-- Top Row: Track Info, Controls, Volume -->
     <div class="flex items-center justify-between gap-4">
       
-      <!-- Video Track Info -->
+      <!-- Video Track Info with HD Thumbnail -->
       <div class="flex items-center gap-3.5 w-1/3 min-w-[200px]">
-        <div class="relative w-11 h-11 rounded-xl overflow-hidden bg-neutral-800 shrink-0 border border-neutral-700/50 shadow-md">
-          <img id="footer-thumb" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100&q=80" alt="Thumbnail" class="w-11 h-11 rounded-xl object-cover shrink-0" />
+        <div class="relative w-12 h-12 rounded-xl overflow-hidden bg-neutral-800 shrink-0 border border-neutral-700/50 shadow-md">
+          <img 
+            id="footer-thumb" 
+            src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=90" 
+            alt="Thumbnail" 
+            class="w-12 h-12 rounded-xl object-cover shrink-0" 
+          />
         </div>
         <div class="overflow-hidden hidden sm:block">
           <h4 id="footer-title" class="font-semibold text-sm text-neutral-100 truncate">No Video Selected</h4>
           <p id="footer-artist" class="text-xs text-neutral-400 truncate mt-0.5">Select a video to play</p>
         </div>
-        <button id="quick-lyrics-btn" class="p-2 rounded-xl text-neutral-400 hover:text-red-400 hover:bg-neutral-800/80 transition-all text-xs shrink-0" title="View Song Lyrics">
-          <i class="fa-solid fa-align-left text-sm"></i>
-        </button>
       </div>
 
       <!-- Playback Controls (Center) -->
@@ -402,7 +347,7 @@
 
     </div>
 
-    <!-- Bottom Row: Time Remaining Counter & Slider -->
+    <!-- Bottom Row: Time Remaining Counter & Seek Slider -->
     <div class="w-full flex items-center gap-3 text-[11px] font-mono text-neutral-400 max-w-4xl mx-auto px-2">
       <span id="current-time-txt" class="w-10 text-right">0:00</span>
       
@@ -430,13 +375,21 @@
       <button id="close-api-modal" class="absolute right-5 top-5 text-neutral-400 hover:text-white p-1">✕</button>
 
       <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center mx-auto shadow-lg shadow-red-900/40">
-          <i class="fa-solid fa-key text-white text-xl"></i>
+        <div id="api-modal-icon-bg" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center mx-auto shadow-lg shadow-red-900/40 transition-all duration-300">
+          <i id="api-modal-icon" class="fa-solid fa-key text-white text-xl"></i>
         </div>
-        <h3 class="text-xl font-bold text-white">YouTube API Key Setup</h3>
+        <h3 id="api-modal-title" class="text-xl font-bold text-white">YouTube API Key Setup</h3>
         <p class="text-xs text-neutral-400 leading-relaxed">
-          Enter your YouTube Data API v3 key to enable keyword searches. Playback of direct YouTube links and preset videos works without a key!
+          Enter your YouTube Data API v3 key once to automatically log in and enable instant search across sessions.
         </p>
+      </div>
+
+      <div id="api-active-banner" class="hidden p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-base shrink-0"></i>
+        <div>
+          <p class="font-bold">Auto-Logged In</p>
+          <p class="text-[11px] text-emerald-300/80">Your API key is saved locally and auto-connects on page load.</p>
+        </div>
       </div>
 
       <div class="space-y-2">
@@ -451,7 +404,10 @@
 
       <div class="flex flex-col gap-2.5 pt-2">
         <button id="save-api-key-btn" class="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-2">
-          <i class="fa-solid fa-circle-check"></i> Save Key & Enable Search
+          <i class="fa-solid fa-circle-check"></i> Save Key & Auto-Connect
+        </button>
+        <button id="remove-api-key-btn" class="hidden w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-red-400 font-semibold text-xs border border-neutral-700 transition-all flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-right-from-bracket"></i> Remove Key / Log Out
         </button>
       </div>
     </div>
@@ -497,110 +453,64 @@
   <!-- Sleep Timer Modal -->
   <div id="sleep-modal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center z-50 p-4">
     <div class="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 max-w-sm w-full space-y-5 shadow-2xl relative">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-bold flex items-center gap-2 text-white">
-          <i class="fa-solid fa-clock text-indigo-400"></i> Sleep Timer
+      <div class="flex items-center justify-between border-b border-neutral-800 pb-3">
+        <h3 class="font-bold text-white text-lg flex items-center gap-2">
+          <i class="fa-solid fa-clock text-red-500"></i> Sleep Timer
         </h3>
-        <button id="close-sleep-modal" class="text-neutral-400 hover:text-white">✕</button>
+        <button id="close-sleep-modal" class="text-neutral-400 hover:text-white p-1">✕</button>
       </div>
 
-      <div class="grid grid-cols-2 gap-3">
-        <button class="sleep-option-btn py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 font-semibold text-sm border border-neutral-700 text-neutral-200" data-mins="15">15 Minutes</button>
-        <button class="sleep-option-btn py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 font-semibold text-sm border border-neutral-700 text-neutral-200" data-mins="30">30 Minutes</button>
-        <button class="sleep-option-btn py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 font-semibold text-sm border border-neutral-700 text-neutral-200" data-mins="45">45 Minutes</button>
-        <button class="sleep-option-btn py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 font-semibold text-sm border border-neutral-700 text-neutral-200" data-mins="60">60 Minutes</button>
+      <p class="text-xs text-neutral-400">
+        Automatically pause playback after the chosen duration.
+      </p>
+
+      <div class="grid grid-cols-2 gap-2">
+        <button data-mins="15" class="sleep-option-btn py-2.5 rounded-xl bg-neutral-800 hover:bg-red-600 hover:text-white text-xs font-semibold text-neutral-200 transition-all border border-neutral-700">15 Minutes</button>
+        <button data-mins="30" class="sleep-option-btn py-2.5 rounded-xl bg-neutral-800 hover:bg-red-600 hover:text-white text-xs font-semibold text-neutral-200 transition-all border border-neutral-700">30 Minutes</button>
+        <button data-mins="45" class="sleep-option-btn py-2.5 rounded-xl bg-neutral-800 hover:bg-red-600 hover:text-white text-xs font-semibold text-neutral-200 transition-all border border-neutral-700">45 Minutes</button>
+        <button data-mins="60" class="sleep-option-btn py-2.5 rounded-xl bg-neutral-800 hover:bg-red-600 hover:text-white text-xs font-semibold text-neutral-200 transition-all border border-neutral-700">60 Minutes</button>
       </div>
 
-      <button id="cancel-sleep-btn" class="hidden w-full py-2.5 rounded-xl bg-red-600/20 text-red-400 font-semibold text-xs border border-red-500/30 hover:bg-red-600/30 transition-all">
-        Cancel Sleep Timer
+      <button id="cancel-sleep-btn" class="hidden w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-red-400 text-xs font-semibold transition-all">
+        Turn Off Timer
       </button>
     </div>
   </div>
 
-  <!-- JavaScript Logic -->
   <script>
+    // High-Definition Thumbnail Helper with Automatic Fallback
+    function getHDThumbnail(videoId) {
+      if (!videoId) return 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=90';
+      return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+    }
+
+    function getFallbackThumbnail(videoId) {
+      return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    }
+
+    // High Quality Preset Categories
     const PRESET_CATEGORIES = [
       {
-        name: 'Trending & Hits',
-        icon: '🔥',
+        name: 'Top Electronic & EDM',
+        icon: '⚡',
         tracks: [
-          { id: 'K4DyBUG242c', title: 'Alan Walker - Faded', artist: 'Alan Walker', thumbnail: 'https://img.youtube.com/vi/K4DyBUG242c/hqdefault.jpg' },
-          { id: 'J2X5mJ3HDYE', title: 'Vicetone - Nevada (feat. Cozi Zuehlsdorff)', artist: 'Vicetone', thumbnail: 'https://img.youtube.com/vi/J2X5mJ3HDYE/hqdefault.jpg' },
-          { id: 'bM7SZ5SBzyY', title: 'Tobu - Hope', artist: 'Tobu', thumbnail: 'https://img.youtube.com/vi/bM7SZ5SBzyY/hqdefault.jpg' }
+          { id: 'K4DyBUG242c', title: 'Faded - Alan Walker', artist: 'Alan Walker', thumbnail: getHDThumbnail('K4DyBUG242c') },
+          { id: 'J2X5mJ3HDYE', title: 'Heroes - Alesso ft. Tove Lo', artist: 'Alesso', thumbnail: getHDThumbnail('J2X5mJ3HDYE') },
+          { id: 'bM7SZ5SBzyY', title: 'On & On - Cartoon', artist: 'NCS Release', thumbnail: getHDThumbnail('bM7SZ5SBzyY') }
         ]
       },
       {
-        name: 'Chill & Lofi Radio',
+        name: 'Lo-Fi & Relaxing Music',
         icon: '☕',
         tracks: [
-          { id: 'jfKfPfyJRdk', title: 'Lofi Hip Hop Radio - Beats to Relax/Study to', artist: 'Lofi Girl', thumbnail: 'https://img.youtube.com/vi/jfKfPfyJRdk/hqdefault.jpg' },
-          { id: '5qap5aO4i9A', title: 'Lofi Sleep Beats - Music to Chill & Sleep', artist: 'Lofi Girl', thumbnail: 'https://img.youtube.com/vi/5qap5aO4i9A/hqdefault.jpg' },
-          { id: '4xDzrJKXOOY', title: 'Synthwave Radio - Chill Retro Synth Beats', artist: 'Lofi Girl', thumbnail: 'https://img.youtube.com/vi/4xDzrJKXOOY/hqdefault.jpg' }
+          { id: 'jfKfPfyJRdk', title: 'Lofi Hip Hop Radio - Beats to Relax/Study to', artist: 'Lofi Girl', thumbnail: getHDThumbnail('jfKfPfyJRdk') },
+          { id: '5qap5aO4i9A', title: 'Lofi Sleep Radio - Chill Beats', artist: 'Lofi Girl', thumbnail: getHDThumbnail('5qap5aO4i9A') },
+          { id: '4xDzrJKXOOY', title: 'Synthwave Radio - Chill Synth Beats', artist: 'Lofi Girl', thumbnail: getHDThumbnail('4xDzrJKXOOY') }
         ]
       }
     ];
 
-    const PRESET_LYRICS = {
-      'K4DyBUG242c': {
-        theme: 'A nostalgic electronic song exploring themes of lost connection, longing, and searching for hope in dark places.',
-        lyrics: `"You were the shadow to my light, did you feel us?
-Another start, you fade away...
-Afraid our aim is out of sight, wanna see us
-Alive..."`
-      },
-      'J2X5mJ3HDYE': {
-        theme: 'An uplifting, empowering track about stepping into the spotlight, overcoming obstacles, and believing in yourself.',
-        lyrics: `"I'm walking through the fire
-I'm standing in the rain
-Feeling like a hero tonight..."`
-      },
-      'bM7SZ5SBzyY': {
-        theme: 'An energetic electronic tune about endless rhythm, staying resilient, and pushing forward through challenges.',
-        lyrics: `"Heaven knows falling deep in love is hard
-So keep on moving on and on..."`
-      },
-      'jfKfPfyJRdk': {
-        theme: 'Relaxing ambient beats tailored for deep focus, studying, and peaceful background listening.',
-        lyrics: 'Instrumental track (Beats to relax & study to)'
-      },
-      '5qap5aO4i9A': {
-        theme: 'Gentle lofi melodies created for deep sleep, unwinding, and nighttime relaxation.',
-        lyrics: 'Instrumental track (Beats to sleep & chill to)'
-      },
-      '4xDzrJKXOOY': {
-        theme: 'Retro-futuristic synthwave beats featuring 80s synthesizer sounds and synth rhythms.',
-        lyrics: 'Instrumental Synthwave track'
-      }
-    };
-
-    function renderLyrics(track) {
-      if (!track) return;
-
-      const titleEl = document.getElementById('lyrics-track-title');
-      const artistEl = document.getElementById('lyrics-track-artist');
-      const thumbEl = document.getElementById('lyrics-thumb');
-      const themeEl = document.getElementById('lyrics-theme-text');
-      const linesEl = document.getElementById('lyrics-text-lines');
-      const googleBtn = document.getElementById('google-lyrics-btn');
-
-      if (titleEl) titleEl.textContent = track.title;
-      if (artistEl) artistEl.textContent = track.artist || 'YouTube Artist';
-      if (thumbEl) thumbEl.src = track.thumbnail || `https://img.youtube.com/vi/${track.id}/hqdefault.jpg`;
-
-      const googleQuery = encodeURIComponent(`${track.title} ${track.artist || ''} lyrics`);
-      if (googleBtn) googleBtn.href = `https://www.google.com/search?q=${googleQuery}`;
-
-      const preset = PRESET_LYRICS[track.id];
-      if (preset) {
-        if (themeEl) themeEl.textContent = preset.theme;
-        if (linesEl) linesEl.textContent = preset.lyrics;
-      } else {
-        if (themeEl) themeEl.textContent = `A track titled "${track.title}" by ${track.artist || 'Artist'}. You can find licensed lyrics and full annotations using the Google search link above!`;
-        if (linesEl) linesEl.textContent = `♪ Excerpt / Lyrics for "${track.title}" ♪\n\nClick "Full Lyrics on Google" to open full licensed lyrics and complete song text in a new tab.`;
-      }
-    }
-
-    // State Variables
+    // Core State Variables
     let apiKey = '';
     let currentTrack = null;
     let isPlaying = false;
@@ -617,7 +527,6 @@ So keep on moving on and on..."`
     let sleepTimerMins = 0;
     let sleepTimerInterval = null;
 
-    // IndexedDB & Storage Fallback Engine
     const DB_NAME = 'SoundStreamDB';
     const DB_VERSION = 1;
     let dbInstance = null;
@@ -689,6 +598,7 @@ So keep on moving on and on..."`
       if (document.getElementById('api-key-input')) {
         document.getElementById('api-key-input').value = apiKey || '';
       }
+      updateApiKeyStatusUI();
     }
 
     function savePlaylistsToStorage() {
@@ -697,6 +607,31 @@ So keep on moving on and on..."`
 
     function saveApiKeyToStorage() {
       saveToDB('soundstream_apikey', apiKey);
+    }
+
+    function updateApiKeyStatusUI() {
+      const icon = document.getElementById('api-key-icon');
+      const label = document.getElementById('api-key-label');
+      const badge = document.getElementById('api-status-badge');
+      const activeBanner = document.getElementById('api-active-banner');
+      const removeBtn = document.getElementById('remove-api-key-btn');
+      const modalIconBg = document.getElementById('api-modal-icon-bg');
+
+      if (apiKey && apiKey.trim().length > 0) {
+        if (icon) icon.className = 'fa-solid fa-key text-emerald-400';
+        if (label) label.textContent = 'Key Active';
+        if (badge) badge.classList.remove('hidden');
+        if (activeBanner) activeBanner.classList.remove('hidden');
+        if (removeBtn) removeBtn.classList.remove('hidden');
+        if (modalIconBg) modalIconBg.className = 'w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center mx-auto shadow-lg shadow-emerald-900/40';
+      } else {
+        if (icon) icon.className = 'fa-solid fa-key text-amber-400';
+        if (label) label.textContent = 'API Key';
+        if (badge) badge.classList.add('hidden');
+        if (activeBanner) activeBanner.classList.add('hidden');
+        if (removeBtn) removeBtn.classList.add('hidden');
+        if (modalIconBg) modalIconBg.className = 'w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center mx-auto shadow-lg shadow-red-900/40';
+      }
     }
 
     // Helper: Format Seconds
@@ -718,7 +653,6 @@ So keep on moving on and on..."`
       return null;
     }
 
-    // YouTube API Ready Callback
     window.onYouTubeIframeAPIReady = function() {
       player = new YT.Player('yt-player-element', {
         height: '100%',
@@ -764,7 +698,7 @@ So keep on moving on and on..."`
       }
     }
 
-    // Initialize Page
+    // Initialization
     document.addEventListener('DOMContentLoaded', () => {
       renderDiscoverTab();
       setupEventListeners();
@@ -772,7 +706,6 @@ So keep on moving on and on..."`
       renderQueue();
     });
 
-    // Event Listeners setup
     function setupEventListeners() {
       // Tab Navigation
       document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -826,17 +759,9 @@ So keep on moving on and on..."`
       document.getElementById('prev-btn').addEventListener('click', handlePrevious);
       document.getElementById('next-btn').addEventListener('click', handleNext);
 
-      // Quick Lyrics Button Listener
-      const quickLyricsBtn = document.getElementById('quick-lyrics-btn');
-      if (quickLyricsBtn) {
-        quickLyricsBtn.addEventListener('click', () => switchTab('lyrics'));
-      }
-
-      // Shuffle Button Listener
+      // Shuffle & Repeat Buttons
       document.getElementById('shuffle-btn').addEventListener('click', toggleShuffle);
       document.getElementById('queue-shuffle-toggle-btn').addEventListener('click', toggleShuffle);
-
-      // Repeat Button Listener
       document.getElementById('repeat-btn').addEventListener('click', toggleRepeat);
 
       // Seek & Volume
@@ -882,7 +807,7 @@ So keep on moving on and on..."`
         }
       });
 
-      // Unmute overlay click
+      // Unmute Overlay
       document.getElementById('unmute-overlay').addEventListener('click', handleExplicitUnmute);
 
       // API Key Modal
@@ -895,7 +820,15 @@ So keep on moving on and on..."`
       document.getElementById('save-api-key-btn').addEventListener('click', () => {
         apiKey = document.getElementById('api-key-input').value.trim();
         saveApiKeyToStorage();
+        updateApiKeyStatusUI();
         document.getElementById('api-key-modal').classList.add('hidden');
+      });
+
+      document.getElementById('remove-api-key-btn').addEventListener('click', () => {
+        apiKey = '';
+        saveApiKeyToStorage();
+        document.getElementById('api-key-input').value = '';
+        updateApiKeyStatusUI();
       });
 
       // Playlist Creation Modal
@@ -925,13 +858,13 @@ So keep on moving on and on..."`
         document.getElementById('add-to-playlist-modal').classList.add('hidden');
       });
 
-      // Clear queue button
+      // Clear Queue Button
       document.getElementById('clear-queue-btn').addEventListener('click', () => {
         queue = [];
         renderQueue();
       });
 
-      // Sleep Timer Modal Listeners
+      // Sleep Timer Modal
       document.getElementById('sleep-timer-btn').addEventListener('click', () => {
         document.getElementById('sleep-modal').classList.remove('hidden');
       });
@@ -956,7 +889,6 @@ So keep on moving on and on..."`
       });
     }
 
-    // Switch Tab Logic with Smooth Fading
     function switchTab(tabName) {
       const contents = document.querySelectorAll('.tab-content');
       
@@ -995,7 +927,6 @@ So keep on moving on and on..."`
       }
     }
 
-    // Play Track Core
     function playTrack(track, addToQueueIfMissing = true) {
       currentTrack = track;
       
@@ -1011,12 +942,16 @@ So keep on moving on and on..."`
       document.getElementById('playing-title').textContent = track.title;
       document.getElementById('playing-artist').textContent = track.artist || 'YouTube Video';
       
-      document.getElementById('footer-thumb').src = track.thumbnail || `https://img.youtube.com/vi/${track.id}/hqdefault.jpg`;
+      const thumbImg = document.getElementById('footer-thumb');
+      const hdSrc = track.thumbnail || getHDThumbnail(track.id);
+      thumbImg.src = hdSrc;
+      thumbImg.onerror = function() {
+        this.onerror = null;
+        this.src = getFallbackThumbnail(track.id);
+      };
+
       document.getElementById('footer-title').textContent = track.title;
       document.getElementById('footer-artist').textContent = track.artist || 'YouTube Video';
-
-      // Update Lyrics
-      renderLyrics(track);
 
       // Show video player iframe element
       document.getElementById('empty-screen-msg').classList.add('hidden');
@@ -1028,7 +963,6 @@ So keep on moving on and on..."`
         isPlaying = true;
         updatePlayPauseUI();
       } else {
-        // Fallback or delayed load if iframe script is still loading
         setTimeout(() => {
           if (player && typeof player.loadVideoById === 'function') {
             player.loadVideoById(track.id);
@@ -1086,7 +1020,6 @@ So keep on moving on and on..."`
       if (currentIndex !== -1 && currentIndex < queue.length - 1) {
         playTrack(queue[currentIndex + 1], false);
       } else if (queue.length > 0) {
-        // Loop back to start
         playTrack(queue[0], false);
       }
     }
@@ -1163,7 +1096,6 @@ So keep on moving on and on..."`
       if (progressTimer) clearInterval(progressTimer);
     }
 
-    // Render Discover Tab
     function renderDiscoverTab() {
       const container = document.getElementById('discover-categories');
       container.innerHTML = '';
@@ -1177,12 +1109,17 @@ So keep on moving on and on..."`
             <span class="text-xl">${category.icon}</span>
             <h3 class="text-lg font-bold text-white">${category.name}</h3>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             ${category.tracks.map(track => `
-              <div class="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-3 hover:border-neutral-700 transition-all group flex flex-col justify-between">
+              <div class="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-3.5 hover:border-neutral-700 transition-all group flex flex-col justify-between shadow-lg">
                 <div>
-                  <div class="relative aspect-video rounded-xl overflow-hidden mb-3 bg-neutral-800">
-                    <img src="${track.thumbnail}" alt="${track.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <div class="relative aspect-video rounded-xl overflow-hidden mb-3 bg-neutral-800 border border-neutral-800">
+                    <img 
+                      src="${track.thumbnail}" 
+                      onerror="this.onerror=null; this.src='${getFallbackThumbnail(track.id)}';"
+                      alt="${track.title}" 
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                    />
                     <button 
                       onclick='playTrack(${JSON.stringify(track).replace(/'/g, "&apos;")})'
                       class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
@@ -1218,7 +1155,6 @@ So keep on moving on and on..."`
       });
     }
 
-    // Search Logic
     async function performSearch(query) {
       const errorBox = document.getElementById('search-error-box');
       const resultsContainer = document.getElementById('search-results-list');
@@ -1232,7 +1168,7 @@ So keep on moving on and on..."`
           id: directId,
           title: `YouTube Video (${directId})`,
           artist: 'Direct Link / Video ID',
-          thumbnail: `https://img.youtube.com/vi/${directId}/hqdefault.jpg`
+          thumbnail: getHDThumbnail(directId)
         };
         playTrack(directTrack);
         resultsContainer.innerHTML = `
@@ -1240,7 +1176,7 @@ So keep on moving on and on..."`
             <i class="fa-solid fa-circle-check text-lg"></i>
             <div>
               <p class="font-bold">Playing Direct YouTube Link / ID</p>
-              <p class="text-xs text-emerald-300/80">Video loaded immediately into the player.</p>
+              <p class="text-xs text-emerald-300/80">Video loaded immediately into the player in full quality.</p>
             </div>
           </div>
         `;
@@ -1285,19 +1221,25 @@ So keep on moving on and on..."`
 
         resultsContainer.innerHTML = '';
         data.items.forEach(item => {
+          const vId = item.id.videoId;
           const track = {
-            id: item.id.videoId,
+            id: vId,
             title: item.snippet.title,
             artist: item.snippet.channelTitle,
-            thumbnail: item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : item.snippet.thumbnails.default.url
+            thumbnail: item.snippet.thumbnails.maxres ? item.snippet.thumbnails.maxres.url : (item.snippet.thumbnails.high ? item.snippet.thumbnails.high.url : getHDThumbnail(vId))
           };
 
           const itemEl = document.createElement('div');
           itemEl.className = 'p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all flex items-center justify-between gap-4 group';
           itemEl.innerHTML = `
             <div class="flex items-center gap-3.5 overflow-hidden">
-              <div class="relative w-20 h-12 rounded-lg overflow-hidden bg-neutral-800 shrink-0">
-                <img src="${track.thumbnail}" alt="" class="w-full h-full object-cover" />
+              <div class="relative w-24 h-14 rounded-lg overflow-hidden bg-neutral-800 shrink-0 border border-neutral-800">
+                <img 
+                  src="${track.thumbnail}" 
+                  onerror="this.onerror=null; this.src='${getFallbackThumbnail(vId)}';"
+                  alt="" 
+                  class="w-full h-full object-cover" 
+                />
                 <button 
                   onclick='playTrack(${JSON.stringify(track).replace(/'/g, "&apos;")})'
                   class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
@@ -1343,7 +1285,6 @@ So keep on moving on and on..."`
       }
     }
 
-    // Queue Management
     function addToQueue(track) {
       queue.push(track);
       renderQueue();
@@ -1377,7 +1318,12 @@ So keep on moving on and on..."`
         item.innerHTML = `
           <div class="flex items-center gap-3.5 overflow-hidden">
             <span class="text-xs font-mono w-5 text-center ${isCurrent ? 'text-red-400 font-bold' : 'text-neutral-500'}">${index + 1}</span>
-            <img src="${track.thumbnail}" alt="" class="w-12 h-9 rounded-lg object-cover bg-neutral-800 shrink-0" />
+            <img 
+              src="${track.thumbnail || getHDThumbnail(track.id)}" 
+              onerror="this.onerror=null; this.src='${getFallbackThumbnail(track.id)}';"
+              alt="" 
+              class="w-14 h-10 rounded-lg object-cover bg-neutral-800 shrink-0 border border-neutral-800" 
+            />
             <div class="overflow-hidden">
               <h4 class="font-semibold text-sm truncate ${isCurrent ? 'text-red-400' : 'text-neutral-100'}">${track.title}</h4>
               <p class="text-xs text-neutral-400 truncate mt-0.5">${track.artist}</p>
@@ -1404,7 +1350,6 @@ So keep on moving on and on..."`
       });
     }
 
-    // Playlist Management
     function renderPlaylists() {
       const grid = document.getElementById('playlists-grid');
       document.getElementById('playlists-count').textContent = playlists.length;
@@ -1421,7 +1366,7 @@ So keep on moving on and on..."`
       grid.innerHTML = '';
       playlists.forEach((pl, plIndex) => {
         const card = document.createElement('div');
-        card.className = 'bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between';
+        card.className = 'bg-neutral-900 border border-neutral-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between shadow-lg';
 
         card.innerHTML = `
           <div class="space-y-2">
@@ -1514,7 +1459,7 @@ So keep on moving on and on..."`
       document.getElementById('add-to-playlist-modal').classList.remove('hidden');
     }
 
-    // Sleep Timer Logic
+    // Sleep Timer
     function setSleepTimer(mins) {
       cancelSleepTimer();
       sleepTimerMins = mins;
