@@ -270,7 +270,7 @@
           </div>
           <div class="flex items-center gap-2">
             <button id="queue-shuffle-toggle-btn" class="px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs text-neutral-300 font-medium border border-neutral-700 transition-all flex items-center gap-1.5">
-              <i class="fa-solid fa-shuffle text-red-400"></i> Toggle Shuffle
+              <i class="fa-solid fa-shuffle text-red-400"></i> Shuffle Queue
             </button>
             <button id="clear-queue-btn" class="px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs text-red-400 font-medium border border-neutral-700 transition-all flex items-center gap-1.5">
               <i class="fa-solid fa-trash-can"></i> Clear Queue
@@ -516,7 +516,6 @@
     let isPlaying = false;
     let volume = 100;
     let isMuted = false;
-    let isShuffle = false;
     let isRepeat = false;
     let queue = [];
     let playlists = [];
@@ -760,8 +759,8 @@
       document.getElementById('next-btn').addEventListener('click', handleNext);
 
       // Shuffle & Repeat Buttons
-      document.getElementById('shuffle-btn').addEventListener('click', toggleShuffle);
-      document.getElementById('queue-shuffle-toggle-btn').addEventListener('click', toggleShuffle);
+      document.getElementById('shuffle-btn').addEventListener('click', shuffleQueue);
+      document.getElementById('queue-shuffle-toggle-btn').addEventListener('click', shuffleQueue);
       document.getElementById('repeat-btn').addEventListener('click', toggleRepeat);
 
       // Seek & Volume
@@ -1009,12 +1008,6 @@
 
     function handleNext() {
       if (!currentTrack || queue.length === 0) return;
-      
-      if (isShuffle) {
-        const randomIndex = Math.floor(Math.random() * queue.length);
-        playTrack(queue[randomIndex], false);
-        return;
-      }
 
       const currentIndex = queue.findIndex(t => t.id === currentTrack.id);
       if (currentIndex !== -1 && currentIndex < queue.length - 1) {
@@ -1024,16 +1017,39 @@
       }
     }
 
-    function toggleShuffle() {
-      isShuffle = !isShuffle;
-      const indicator = document.getElementById('shuffle-indicator');
-      const shuffleBtn = document.getElementById('shuffle-btn');
-      if (isShuffle) {
-        indicator.classList.remove('hidden');
-        shuffleBtn.classList.add('text-red-400');
+    function shuffleQueue() {
+      if (queue.length <= 1) return;
+
+      // Keep currently playing track at top if playing
+      if (currentTrack) {
+        const currentIndex = queue.findIndex(t => t.id === currentTrack.id);
+        let currentItem = null;
+        if (currentIndex !== -1) {
+          currentItem = queue.splice(currentIndex, 1)[0];
+        }
+        // Fisher-Yates shuffle remaining queue items
+        for (let i = queue.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [queue[i], queue[j]] = [queue[j], queue[i]];
+        }
+        if (currentItem) {
+          queue.unshift(currentItem);
+        }
       } else {
-        indicator.classList.add('hidden');
-        shuffleBtn.classList.remove('text-red-400');
+        // Fisher-Yates shuffle all queue items
+        for (let i = queue.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [queue[i], queue[j]] = [queue[j], queue[i]];
+        }
+      }
+
+      renderQueue();
+
+      // Quick visual feedback animation on button click
+      const btnIcon = document.querySelector('#shuffle-btn i');
+      if (btnIcon) {
+        btnIcon.classList.add('rotate-180');
+        setTimeout(() => btnIcon.classList.remove('rotate-180'), 300);
       }
     }
 
