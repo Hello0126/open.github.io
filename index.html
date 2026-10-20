@@ -153,6 +153,15 @@
       </button>
 
       <button 
+        id="toggle-video-btn"
+        class="p-2.5 rounded-full border border-neutral-700/50 bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300 transition-all flex items-center gap-1.5 text-xs font-medium"
+        title="Toggle Video Screen (Audio Only Mode)"
+      >
+        <i id="toggle-video-icon" class="fa-solid fa-video text-red-400"></i>
+        <span id="toggle-video-label" class="hidden sm:inline">Video On</span>
+      </button>
+
+      <button 
         id="settings-btn"
         class="p-2.5 rounded-full border border-neutral-700/50 bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300 transition-all flex items-center gap-1.5 text-xs font-medium relative"
         title="API Settings"
@@ -210,10 +219,16 @@
             <i class="fa-solid fa-tv text-red-500"></i>
             <span id="playing-title">Video Player Screen</span>
           </span>
-          <span id="playing-artist" class="text-xs text-neutral-500 font-mono"></span>
+          <div class="flex items-center gap-3">
+            <span id="playing-artist" class="text-xs text-neutral-500 font-mono"></span>
+            <button id="inline-toggle-video" class="text-xs text-neutral-400 hover:text-white flex items-center gap-1 border border-neutral-700/60 px-2 py-1 rounded-lg bg-neutral-800/50">
+              <i id="inline-video-icon" class="fa-solid fa-eye-slash"></i>
+              <span id="inline-video-label">Hide Screen</span>
+            </button>
+          </div>
         </div>
 
-        <div class="w-full aspect-video max-h-[480px] bg-black relative flex items-center justify-center overflow-hidden">
+        <div id="player-screen-wrapper" class="w-full aspect-video max-h-[480px] bg-black relative flex items-center justify-center overflow-hidden transition-all duration-300">
           <!-- Primary Iframe Screen -->
           <iframe 
             id="main-player-frame" 
@@ -235,6 +250,22 @@
               <i class="fa-solid fa-rotate text-xs"></i> Switch Engine
             </button>
           </div>
+        </div>
+
+        <!-- Audio Mode Compact Banner (Shown when video is hidden) -->
+        <div id="audio-mode-banner" class="hidden p-6 bg-gradient-to-r from-neutral-900 via-neutral-950 to-neutral-900 flex items-center justify-between border-t border-neutral-800">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
+              <i class="fa-solid fa-headphones text-xl"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-neutral-200">Audio-Only Mode Active</p>
+              <p class="text-[11px] text-neutral-400">Video display is hidden. Playback continues in the background.</p>
+            </div>
+          </div>
+          <button id="restore-video-btn" class="px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 border border-neutral-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-video text-xs text-red-400"></i> Show Video
+          </button>
         </div>
       </div>
 
@@ -567,6 +598,16 @@
       engineModal: document.getElementById('engine-modal'),
       closeEngineModal: document.getElementById('close-engine-modal'),
 
+      toggleVideoBtn: document.getElementById('toggle-video-btn'),
+      toggleVideoIcon: document.getElementById('toggle-video-icon'),
+      toggleVideoLabel: document.getElementById('toggle-video-label'),
+      inlineToggleVideo: document.getElementById('inline-toggle-video'),
+      inlineVideoIcon: document.getElementById('inline-video-icon'),
+      inlineVideoLabel: document.getElementById('inline-video-label'),
+      playerScreenWrapper: document.getElementById('player-screen-wrapper'),
+      audioModeBanner: document.getElementById('audio-mode-banner'),
+      restoreVideoBtn: document.getElementById('restore-video-btn'),
+
       settingsBtn: document.getElementById('settings-btn'),
       apiModal: document.getElementById('api-modal'),
       closeApiModal: document.getElementById('close-api-modal'),
@@ -575,6 +616,36 @@
 
       toastContainer: document.getElementById('toast-container')
     };
+
+    function toggleVideoDisplay(show) {
+      if (typeof show === 'boolean') {
+        state.videoVisible = show;
+      } else {
+        state.videoVisible = !state.videoVisible;
+      }
+
+      if (state.videoVisible) {
+        elements.playerScreenWrapper.classList.remove('hidden');
+        elements.audioModeBanner.classList.add('hidden');
+        elements.toggleVideoIcon.className = 'fa-solid fa-video text-red-400';
+        elements.toggleVideoLabel.textContent = 'Video On';
+        elements.inlineVideoIcon.className = 'fa-solid fa-eye-slash';
+        elements.inlineVideoLabel.textContent = 'Hide Screen';
+        showToast('Video screen enabled', 'info');
+      } else {
+        elements.playerScreenWrapper.classList.add('hidden');
+        elements.audioModeBanner.classList.remove('hidden');
+        elements.toggleVideoIcon.className = 'fa-solid fa-video-slash text-neutral-400';
+        elements.toggleVideoLabel.textContent = 'Video Off';
+        elements.inlineVideoIcon.className = 'fa-solid fa-eye';
+        elements.inlineVideoLabel.textContent = 'Show Screen';
+        showToast('Audio-only mode enabled', 'info');
+      }
+    }
+
+    elements.toggleVideoBtn.addEventListener('click', () => toggleVideoDisplay());
+    elements.inlineToggleVideo.addEventListener('click', () => toggleVideoDisplay());
+    elements.restoreVideoBtn.addEventListener('click', () => toggleVideoDisplay(true));
 
     function showToast(msg, type = 'info') {
       const toast = document.createElement('div');
