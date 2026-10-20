@@ -348,6 +348,10 @@
 
     <!-- Playback Controls -->
     <div class="flex items-center justify-center gap-3 md:gap-4 shrink-0">
+      <button id="shuffle-btn" class="p-2 text-neutral-400 hover:text-white transition-all" title="Shuffle Queue">
+        <i class="fa-solid fa-shuffle text-sm"></i>
+      </button>
+
       <button id="prev-btn" class="p-2 text-neutral-300 hover:text-white transition-all" title="Previous Track">
         <i class="fa-solid fa-backward-step text-base"></i>
       </button>
@@ -545,6 +549,7 @@
       queueSubtitleCount: document.getElementById('queue-subtitle-count'),
       clearQueueBtn: document.getElementById('clear-queue-btn'),
 
+      shuffleBtn: document.getElementById('shuffle-btn'),
       playPauseBtn: document.getElementById('play-pause-btn'),
       playPauseIcon: document.getElementById('play-pause-icon'),
       prevBtn: document.getElementById('prev-btn'),
@@ -941,24 +946,48 @@
               <p class="text-[11px] text-neutral-400 truncate mt-0.5">${safeChannel}</p>
             </div>
           </div>
-          <button class="remove-queue-btn p-2 text-neutral-400 hover:text-red-400 transition-colors">
-            <i class="fa-solid fa-xmark text-xs"></i>
+          <button class="remove-queue-btn p-2 text-neutral-400 hover:text-red-400 transition-colors" title="Remove from Queue">
+            <i class="fa-solid fa-trash-can text-xs"></i>
           </button>
         `;
 
         item.querySelector('.queue-item-click').addEventListener('click', () => {
           state.currentIndex = idx;
-          playTrack(state.queue[idx]);
+          playTrack(track);
         });
 
         item.querySelector('.remove-queue-btn').addEventListener('click', (e) => {
           e.stopPropagation();
           state.queue.splice(idx, 1);
           renderQueue();
+          showToast('Removed from queue', 'info');
         });
 
         elements.queueList.appendChild(item);
       });
+    }
+
+    function shuffleQueue() {
+      if (state.queue.length <= 1) {
+        showToast('Add more tracks to shuffle queue', 'info');
+        return;
+      }
+
+      // Fisher-Yates shuffle algorithm
+      for (let i = state.queue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [state.queue[i], state.queue[j]] = [state.queue[j], state.queue[i]];
+      }
+
+      // If a track is currently playing, adjust currentIndex to match its new position
+      if (state.currentTrack) {
+        state.currentIndex = state.queue.findIndex(t => t.id === state.currentTrack.id);
+      } else {
+        state.currentIndex = 0;
+      }
+
+      renderQueue();
+      showToast('Queue shuffled!', 'success');
     }
 
     elements.createPlaylistBtn.addEventListener('click', () => {
@@ -1036,6 +1065,10 @@
       elements.engineLabel.textContent = `Engine: ${state.engineMode.toUpperCase()}`;
       
       if (state.currentTrack) playTrack(state.currentTrack);
+    });
+
+    elements.shuffleBtn.addEventListener('click', () => {
+      shuffleQueue();
     });
 
     document.querySelectorAll('.engine-btn').forEach(btn => {
