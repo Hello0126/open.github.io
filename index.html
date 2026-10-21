@@ -667,26 +667,23 @@
     }
 
     function playNextTrackInQueue() {
-      if (state.queue.length === 0) return;
+      if (state.queue.length <= 1) return;
       
-      state.currentIndex = state.currentIndex + 1;
-      if (state.currentIndex >= state.queue.length) {
-        state.currentIndex = 0; // Loop back to beginning of queue
-      }
+      // Since current playing song is always at index 0, 
+      // the next song to play is always at index 1!
+      const nextTrack = state.queue[1];
 
-      const nextTrack = state.queue[state.currentIndex];
       if (nextTrack) {
-        playTrack(nextTrack);
-        renderQueue();
+        // Shift out the completed song and play the next one as #1
+        state.queue.shift();
+        playTrack(nextTrack, false);
       }
     }
 
-    // Window PostMessage Event Listener for YouTube iFrame Events
     window.addEventListener('message', (event) => {
       try {
         const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
         if (data && data.event === 'infoDelivery' && data.info) {
-          // Player state 0 = ENDED
           if (data.info.playerState === 0) {
             playNextTrackInQueue();
           }
@@ -701,7 +698,6 @@
         clearInterval(state.endCheckInterval);
       }
 
-      // Periodically post a listening command to the YouTube iframe to enable postMessage events
       state.endCheckInterval = setInterval(() => {
         if (elements.mainPlayerFrame && state.isPlaying) {
           try {
@@ -714,27 +710,25 @@
       }, 1000);
     }
 
-    function playTrack(track) {
+    function playTrack(track, addToQueueIfNeeded = true) {
       if (!track || !track.id) return;
 
       state.currentTrack = track;
       state.isPlaying = true;
 
-      // Ensure track is in queue and sync currentIndex
-      const queueIdx = state.queue.findIndex(t => t.id === track.id);
-      if (queueIdx !== -1) {
-        state.currentIndex = queueIdx;
-      } else {
-        state.queue.push(track);
-        state.currentIndex = state.queue.length - 1;
-        renderQueue();
+      // Ensure the currently playing track always stays at position #1 (index 0) in the queue
+      const existingIdx = state.queue.findIndex(t => t.id === track.id);
+      if (existingIdx !== -1) {
+        // Remove from current position and move to top
+        state.queue.splice(existingIdx, 1);
       }
+      state.queue.unshift(track);
+      state.currentIndex = 0;
 
       elements.emptyScreenMsg.classList.add('hidden');
       elements.mainPlayerFrame.classList.remove('hidden');
       elements.quickFixOverlay.classList.remove('hidden');
 
-      // Update UI displays
       elements.footerTitle.textContent = track.title;
       elements.footerArtist.textContent = track.channel;
       elements.footerThumb.src = track.thumbnail;
@@ -774,7 +768,6 @@
         </div>
       `;
 
-      // Direct Link / Video ID Extraction
       const match = q.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/) || q.match(/^[\w-]{11}$/);
       if (match && match[1]) {
         const videoId = match[1];
@@ -789,7 +782,6 @@
         return;
       }
 
-      // YouTube API Key Search
       if (state.apiKey) {
         try {
           const apiRes = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(q)}&type=video&key=${state.apiKey}`);
@@ -809,7 +801,6 @@
         }
       }
 
-      // Proxy Endpoints Search
       const searchEndpoints = [
         `https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(q)}&filter=music`,
         `https://api.piped.privacydev.net/search?q=${encodeURIComponent(q)}&filter=videos`,
@@ -1074,14 +1065,24 @@
 
       state.queue.forEach((track, idx) => {
         const item = document.createElement('div');
-        item.className = 'p-3 rounded-2xl border border-neutral-800 bg-neutral-900/60 flex items-center justify-between gap-3';
+        const isCurrentlyPlaying = (idx === 0 && state.currentTrack && state.currentTrack.id === track.id);
+
+        item.className = `p-3 rounded-2xl border flex items-center justify-between gap-3 transition-all ${
+          isCurrentlyPlaying 
+            ? 'border-red-500/50 bg-red-500/10 shadow-md' 
+            : 'border-neutral-800 bg-neutral-900/60'
+        }`;
+
         const safeTitle = track.title.replace(/"/g, '&quot;');
         const safeChannel = track.channel.replace(/"/g, '&quot;');
+
         item.innerHTML = `
           <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1 queue-item-click">
-            <span class="text-xs font-mono font-bold w-5 text-center text-neutral-500">${idx + 1}</span>
+            <span class="text-xs font-mono font-bold w-5 text-center ${isCurrentlyPlaying ? 'text-red-400' : 'text-neutral-500'}">
+              ${isCurrentlyPlaying ? '<i class="fa-solid fa-volume-high text-xs animate-pulse"></i>' : (idx + 1)}
+            </span>
             <div class="overflow-hidden">
-              <h4 class="font-semibold text-xs truncate text-neutral-100">${safeTitle}</h4>
+              <h4 class="font-semibold text-xs truncate ${isCurrentlyPlaying ? 'text-red-400 font-bold' : 'text-neutral-100'}">${safeTitle}</h4>
               <p class="text-[11px] text-neutral-400 truncate mt-0.5">${safeChannel}</p>
             </div>
           </div>
@@ -1091,13 +1092,28 @@
         `;
 
         item.querySelector('.queue-item-click').addEventListener('click', () => {
-          state.currentIndex = idx;
-          playTrack(track);
+          playTrack(track, false);
         });
 
         item.querySelector('.remove-queue-btn').addEventListener('click', (e) => {
           e.stopPropagation();
           state.queue.splice(idx, 1);
+          
+          if (isCurrentlyPlaying) {
+            if (state.queue.length > 0) {
+              playTrack(state.queue[0], false);
+            } else {
+              state.currentTrack = null;
+              state.isPlaying = false;
+              elements.mainPlayerFrame.src = '';
+              elements.mainPlayerFrame.classList.add('hidden');
+              elements.emptyScreenMsg.classList.remove('hidden');
+              elements.footerTitle.textContent = 'No Video Selected';
+              elements.footerArtist.textContent = 'Select a video to play';
+              elements.playPauseIcon.className = 'fa-solid fa-play text-sm ml-0.5';
+            }
+          }
+
           renderQueue();
           showToast('Removed from queue', 'info');
         });
@@ -1112,21 +1128,20 @@
         return;
       }
 
-      // Fisher-Yates shuffle algorithm
-      for (let i = state.queue.length - 1; i > 0; i--) {
+      // Shuffle upcoming songs while keeping index 0 (current playing track) at the top
+      const current = state.queue[0];
+      const upcoming = state.queue.slice(1);
+
+      for (let i = upcoming.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [state.queue[i], state.queue[j]] = [state.queue[j], state.queue[i]];
+        [upcoming[i], upcoming[j]] = [upcoming[j], upcoming[i]];
       }
 
-      // If a track is currently playing, adjust currentIndex to match its new position
-      if (state.currentTrack) {
-        state.currentIndex = state.queue.findIndex(t => t.id === state.currentTrack.id);
-      } else {
-        state.currentIndex = 0;
-      }
+      state.queue = [current, ...upcoming];
+      state.currentIndex = 0;
 
       renderQueue();
-      showToast('Queue shuffled!', 'success');
+      showToast('Upcoming queue shuffled!', 'success');
     }
 
     elements.createPlaylistBtn.addEventListener('click', () => {
@@ -1174,11 +1189,12 @@
       state.queue = [...pl.tracks];
       state.currentIndex = 0;
       renderQueue();
-      playTrack(state.queue[0]);
+      playTrack(state.queue[0], false);
     });
 
     elements.clearQueueBtn.addEventListener('click', () => {
       state.queue = [];
+      state.currentIndex = -1;
       renderQueue();
       showToast('Queue cleared', 'info');
     });
@@ -1241,7 +1257,7 @@
     elements.prevBtn.addEventListener('click', () => {
       if (state.queue.length === 0) return;
       state.currentIndex = (state.currentIndex - 1 + state.queue.length) % state.queue.length;
-      playTrack(state.queue[state.currentIndex]);
+      playTrack(state.queue[state.currentIndex], false);
     });
 
     // Navigation Tabs
