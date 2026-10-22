@@ -1,1307 +1,1042 @@
 <!DOCTYPE html>
-<html lang="en" class="dark h-full bg-neutral-950 text-neutral-100 selection:bg-red-500 selection:text-white">
+<html lang="en" class="h-full bg-stone-950 text-stone-100">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StreamPulse Pro - YouTube Audio & Video Player</title>
-  
-  <!-- Google Fonts Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- FontAwesome 6 -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-  <!-- Tailwind CSS CDN -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ad-Free Tube Player</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#fef2f2',
-              100: '#ffe1e1',
-              500: '#ef4444',
-              600: '#dc2626',
-              700: '#b91c1c',
-            }
-          }
-        }
-      }
-    }
-  </script>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      user-select: none;
-    }
-
-    .tab-content {
-      transition: opacity 250ms ease-in-out, transform 250ms ease-in-out;
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .tab-content.hidden {
-      display: none !important;
-      opacity: 0;
-      transform: translateY(12px);
-    }
-
-    button, a {
-      transition: transform 150ms ease, background-color 200ms ease, opacity 200ms ease, border-color 200ms ease;
-    }
-
-    button:active, a:active {
-      transform: scale(0.95) !important;
-    }
-
     /* Custom Scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(23, 23, 23, 0.6);
+      background: rgba(28, 25, 23, 0.6);
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(64, 64, 64, 0.8);
-      border-radius: 9999px;
+      background: rgba(68, 64, 60, 0.8);
+      border-radius: 4px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(220, 38, 38, 0.8);
+      background: rgba(120, 113, 108, 1);
     }
-
-    /* Custom Input Range Styling */
-    input[type=range] {
-      -webkit-appearance: none;
-      background: transparent;
-    }
-    input[type=range]:focus {
-      outline: none;
-    }
-    input[type=range]::-webkit-slider-runnable-track {
-      width: 100%;
-      height: 6px;
-      cursor: pointer;
-      background: #262626;
-      border-radius: 9999px;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      height: 14px;
-      width: 14px;
-      border-radius: 50%;
-      background: #ef4444;
-      cursor: pointer;
-      -webkit-appearance: none;
-      margin-top: -4px;
-      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
-      transition: transform 0.1s ease;
-    }
-    input[type=range]::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
   </style>
 </head>
-<body class="h-full flex flex-col overflow-hidden bg-neutral-950 text-neutral-100 antialiased">
+<body class="h-full flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-stone-950">
 
   <!-- Top Navigation Header -->
-  <header class="h-16 border-b border-neutral-800/80 bg-neutral-900/90 backdrop-blur-md px-4 md:px-6 flex items-center justify-between z-30 shrink-0">
-    
-    <!-- Logo & Brand -->
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-red-600/30">
-        <i class="fa-solid fa-play text-lg ml-0.5"></i>
+  <header class="bg-stone-900/90 border-b border-amber-900/40 backdrop-blur sticky top-0 z-40 px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 rounded-xl shadow-lg shadow-amber-500/20 text-stone-950 flex items-center justify-center font-bold">
+        <i class="fa-solid fa-play text-lg"></i>
       </div>
       <div>
-        <h1 class="font-bold text-base tracking-tight leading-none text-white flex items-center gap-2">
-          StreamPulse <span class="text-[10px] uppercase font-extrabold px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 border border-red-500/30">Pro</span>
-        </h1>
-        <p class="text-[11px] text-neutral-400 font-medium">YouTube Audio & Video Player</p>
+        <h1 class="font-bold text-lg leading-none bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500 bg-clip-text text-transparent">CleanTube</h1>
+        <p class="text-xs text-amber-500/70 mt-0.5">Gold Edition • Streamer & Playlist Hub</p>
       </div>
     </div>
 
-    <!-- Search Bar (Header) -->
-    <form id="search-form" class="flex-1 max-w-lg mx-4 hidden md:flex items-center">
-      <div class="relative w-full">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 text-sm"></i>
+    <!-- Search Bar -->
+    <div class="flex-1 max-w-xl min-w-[280px]">
+      <form id="search-form" class="relative flex items-center">
         <input 
           type="text" 
-          id="header-search-input"
-          placeholder="Search YouTube or paste video link/ID..."
-          class="w-full bg-neutral-800/80 hover:bg-neutral-800 focus:bg-neutral-900 border border-neutral-700/60 focus:border-red-500 rounded-full py-2 pl-10 pr-10 text-sm text-neutral-100 placeholder-neutral-400 outline-none transition-all shadow-inner"
-        />
-      </div>
-    </form>
+          id="search-input"
+          placeholder="Search YouTube videos..." 
+          class="w-full bg-stone-900/90 border border-amber-900/50 rounded-full py-2 pl-4 pr-12 text-sm text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
+        >
+        <button type="submit" class="absolute right-1 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 rounded-full text-xs font-semibold transition shadow-md shadow-amber-500/20">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </button>
+      </form>
+    </div>
 
-    <!-- Top Action Buttons -->
-    <div class="flex items-center gap-2">
+    <!-- Right Controls: Config API Key Button -->
+    <div class="flex items-center space-x-2">
       <button 
-        id="network-engine-btn"
-        class="p-2.5 rounded-full border border-indigo-500/30 bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-all flex items-center gap-1.5 text-xs font-medium"
-        title="Wi-Fi Unblocker & Stream Engine"
+        id="open-settings-btn"
+        class="flex items-center space-x-2 bg-stone-900 hover:bg-stone-800 border border-amber-900/60 text-amber-300 px-3.5 py-1.5 rounded-xl text-xs font-medium transition"
       >
-        <i class="fa-solid fa-shield-cat text-sm"></i>
-        <span class="hidden lg:inline" id="engine-label">Engine: Auto</span>
-      </button>
-
-      <button 
-        id="toggle-video-btn"
-        class="p-2.5 rounded-full border border-neutral-700/50 bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300 transition-all flex items-center gap-1.5 text-xs font-medium"
-        title="Toggle Video Screen (Audio Only Mode)"
-      >
-        <i id="toggle-video-icon" class="fa-solid fa-video text-red-400"></i>
-        <span id="toggle-video-label" class="hidden sm:inline">Video On</span>
-      </button>
-
-      <button 
-        id="settings-btn"
-        class="p-2.5 rounded-full border border-neutral-700/50 bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300 transition-all flex items-center gap-1.5 text-xs font-medium relative"
-        title="API Settings"
-      >
-        <i id="api-key-icon" class="fa-solid fa-key text-amber-400"></i>
-        <span id="api-key-label" class="hidden sm:inline">API Key</span>
+        <i class="fa-solid fa-key text-yellow-400"></i>
+        <span id="api-status-badge" class="hidden sm:inline">API Key</span>
       </button>
     </div>
   </header>
 
-  <div class="flex-1 flex overflow-hidden relative">
-
-    <!-- Sidebar Navigation -->
-    <aside class="w-16 md:w-64 border-r border-neutral-800/60 bg-neutral-900/40 flex flex-col justify-between p-3 z-10 shrink-0">
-      <div class="space-y-6">
-        <nav class="space-y-1">
-          <button 
-            data-tab="search"
-            class="tab-btn active-tab w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all text-white bg-neutral-800/80 shadow-md hover:scale-[1.02]"
-          >
-            <i class="fa-solid fa-magnifying-glass text-lg text-red-500"></i>
-            <span class="hidden md:inline">Search Videos</span>
-          </button>
-
-          <button 
-            data-tab="playlists"
-            class="tab-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 hover:scale-[1.02]"
-          >
-            <i class="fa-solid fa-layer-group text-lg"></i>
-            <span class="hidden md:inline">Playlists (<span id="playlists-count">0</span>)</span>
-          </button>
-
-          <button 
-            data-tab="queue"
-            class="tab-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 hover:scale-[1.02]"
-          >
-            <i class="fa-solid fa-list text-lg"></i>
-            <span class="hidden md:inline">Queue (<span id="queue-count">0</span>)</span>
-          </button>
-        </nav>
-      </div>
-
-      <div class="hidden md:block text-[11px] text-neutral-500 font-mono text-center">
-        v3.1 Direct Engine • Unblocked
-      </div>
-    </aside>
-
-    <!-- Main Content Tab Area -->
-    <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 bg-gradient-to-b from-neutral-950 via-neutral-900/40 to-neutral-950">
+  <!-- Main Grid Area: Left Video Player, Right Controls (Search, Queue, Playlists) -->
+  <main class="flex-1 overflow-hidden p-3 md:p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1920px] mx-auto w-full">
+    
+    <!-- LEFT PANEL: Main Video Player & Details (7 Cols on large screen) -->
+    <section class="lg:col-span-7 xl:col-span-7 flex flex-col gap-4 overflow-y-auto pr-1">
       
-      <!-- Video Display Box -->
-      <div id="video-display-container" class="w-full rounded-3xl overflow-hidden bg-black border border-neutral-800 shadow-2xl transition-all relative">
-        <div class="p-3 bg-neutral-900 border-b border-neutral-800 flex items-center justify-between">
-          <span class="text-xs font-semibold text-neutral-300 flex items-center gap-2">
-            <i class="fa-solid fa-tv text-red-500"></i>
-            <span id="playing-title">Video Player Screen</span>
-          </span>
-          <div class="flex items-center gap-3">
-            <span id="playing-artist" class="text-xs text-neutral-500 font-mono"></span>
-            <button id="inline-toggle-video" class="text-xs text-neutral-400 hover:text-white flex items-center gap-1 border border-neutral-700/60 px-2 py-1 rounded-lg bg-neutral-800/50">
-              <i id="inline-video-icon" class="fa-solid fa-eye-slash"></i>
-              <span id="inline-video-label">Hide Screen</span>
+      <!-- Embed Video Player Container -->
+      <div class="w-full bg-stone-900 rounded-2xl overflow-hidden border border-amber-900/40 shadow-2xl shadow-amber-950/20 aspect-video relative flex items-center justify-center group">
+        <iframe 
+          id="youtube-iframe" 
+          class="w-full h-full border-0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+        
+        <!-- Empty State Overlay when no video -->
+        <div id="player-empty-state" class="absolute inset-0 bg-stone-950/95 flex flex-col items-center justify-center p-6 text-center z-10">
+          <div class="w-16 h-16 rounded-full bg-stone-900 flex items-center justify-center text-amber-400 mb-4 border border-amber-500/30 shadow-lg shadow-amber-500/10">
+            <i class="fa-solid fa-circle-play text-3xl"></i>
+          </div>
+          <h3 class="text-lg font-semibold text-amber-200">No Video Playing</h3>
+          <p class="text-sm text-stone-400 max-w-md mt-1">Search for a video on the right panel, load a playlist, or pick an item from your queue to start playback.</p>
+        </div>
+      </div>
+
+      <!-- Current Video Info Bar & Navigation Controls -->
+      <div class="bg-stone-900/90 border border-amber-900/40 rounded-2xl p-4 flex flex-col gap-3">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="current-video-title" class="font-bold text-base md:text-lg text-amber-100 line-clamp-2">Select a video to play</h2>
+            <p id="current-video-channel" class="text-xs text-amber-400/90 mt-1 font-medium">--</p>
+          </div>
+          
+          <div class="flex items-center space-x-2 shrink-0">
+            <button id="add-current-to-playlist-btn" class="p-2.5 bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-xl text-xs flex items-center gap-2 border border-amber-800/60 transition" title="Save to Playlist">
+              <i class="fa-solid fa-bookmark text-yellow-400"></i>
+              <span class="hidden sm:inline">Save</span>
             </button>
           </div>
         </div>
 
-        <div id="player-screen-wrapper" class="w-full aspect-video max-h-[480px] bg-black relative flex items-center justify-center overflow-hidden transition-all duration-300">
-          <!-- Primary Iframe Screen Container for YouTube API -->
-          <div id="main-player-frame-container" class="w-full h-full">
-            <iframe 
-              id="main-player-frame" 
-              class="w-full h-full border-0 hidden" 
-              allow="autoplay; encrypted-media; picture-in-picture; accelerometer; gyroscope; clipboard-write; web-share" 
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen
-            ></iframe>
-          </div>
+        <hr class="border-amber-900/30 my-1">
 
-          <!-- Empty Screen Message -->
-          <div id="empty-screen-msg" class="w-full h-full flex flex-col items-center justify-center text-neutral-500 gap-3 p-6 text-center">
-            <i class="fa-solid fa-play-circle text-5xl text-neutral-600"></i>
-            <p class="text-sm font-medium text-neutral-400">Search or select a video to start playing</p>
-            <p class="text-xs text-neutral-600 max-w-xs">Select any track or create custom playlists to build your stream queue!</p>
-          </div>
-
-          <!-- Unblock / Quick Fix Banner -->
-          <div id="quick-fix-overlay" class="hidden absolute top-3 right-3 z-30">
-            <button id="direct-bypass-btn" class="px-3 py-1.5 rounded-lg bg-red-600/90 hover:bg-red-600 text-white font-bold text-xs shadow-lg flex items-center gap-1.5 backdrop-blur-md">
-              <i class="fa-solid fa-rotate text-xs"></i> Switch Engine
+        <!-- Playback Navigation Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center space-x-2">
+            <button id="prev-btn" class="px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded-xl text-xs font-medium transition flex items-center gap-1.5 border border-amber-900/40">
+              <i class="fa-solid fa-backward-step"></i>
+              <span>Prev</span>
+            </button>
+            <button id="next-btn" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-md shadow-amber-500/20">
+              <span>Next</span>
+              <i class="fa-solid fa-forward-step"></i>
             </button>
           </div>
-        </div>
 
-        <!-- Audio Mode Compact Banner (Shown when video is hidden) -->
-        <div id="audio-mode-banner" class="hidden p-6 bg-gradient-to-r from-neutral-900 via-neutral-950 to-neutral-900 flex items-center justify-between border-t border-neutral-800">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
-              <i class="fa-solid fa-headphones text-xl"></i>
-            </div>
-            <div>
-              <p class="text-xs font-semibold text-neutral-200">Audio-Only Mode Active</p>
-              <p class="text-[11px] text-neutral-400">Video display is hidden. Playback continues in the background.</p>
-            </div>
+          <!-- Shuffle Dynamic Controller -->
+          <div class="flex items-center bg-stone-950/80 p-1 rounded-xl border border-amber-900/50 space-x-2">
+            <button id="shuffle-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-2 text-stone-400 hover:text-amber-300">
+              <i class="fa-solid fa-shuffle text-sm"></i>
+              <span>Shuffle Queue</span>
+            </button>
+            <span id="shuffle-status-pill" class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 uppercase tracking-wider">OFF</span>
           </div>
-          <button id="restore-video-btn" class="px-3 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-neutral-200 border border-neutral-700 flex items-center gap-1.5">
-            <i class="fa-solid fa-video text-xs text-red-400"></i> Show Video
-          </button>
         </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT PANEL: Search, Queue & Playlists (5 Cols on large screen) -->
+    <section class="lg:col-span-5 xl:col-span-5 flex flex-col bg-stone-900/90 border border-amber-900/40 rounded-2xl overflow-hidden shadow-xl h-full">
+      
+      <!-- Tab Header Navigation -->
+      <div class="flex border-b border-amber-900/40 bg-stone-950/60 shrink-0">
+        <button id="tab-search-btn" class="flex-1 py-3 px-2 text-xs font-semibold text-amber-400 border-b-2 border-amber-400 flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Search</span>
+        </button>
+        <button id="tab-queue-btn" class="flex-1 py-3 px-2 text-xs font-semibold text-stone-400 border-b-2 border-transparent hover:text-amber-200 flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-list-ol"></i>
+          <span>Queue (<span id="queue-count">0</span>)</span>
+        </button>
+        <button id="tab-playlist-btn" class="flex-1 py-3 px-2 text-xs font-semibold text-stone-400 border-b-2 border-transparent hover:text-amber-200 flex items-center justify-center gap-1.5 transition">
+          <i class="fa-solid fa-folder-plus"></i>
+          <span>Playlists</span>
+        </button>
       </div>
 
       <!-- SEARCH TAB CONTENT -->
-      <section id="tab-search" class="tab-content space-y-6">
-        <div class="flex flex-col gap-1">
-          <h2 class="text-2xl font-bold">Search YouTube Videos</h2>
-          <p class="text-sm text-neutral-400">Search any video topic or paste YouTube links / Video IDs directly.</p>
-        </div>
-
-        <form id="main-search-form" class="flex gap-2">
-          <input 
-            type="text" 
-            id="main-search-input"
-            placeholder="e.g. Lofi beats, Synthwave, or YouTube link..."
-            class="flex-1 bg-neutral-900 border border-neutral-700 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-neutral-100 outline-none shadow-inner"
-          />
-          <button 
-            type="submit"
-            class="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 font-semibold text-sm text-white shadow-lg shadow-red-600/30 flex items-center gap-2 transition-all"
-          >
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <span>Search</span>
-          </button>
-        </form>
-
-        <div id="search-error-box" class="hidden p-4 rounded-xl bg-neutral-900/90 border border-amber-500/30 text-amber-300 text-sm flex items-start gap-3">
-          <i class="fa-solid fa-circle-exclamation text-amber-400 shrink-0 mt-0.5 text-base"></i>
-          <p id="search-error-msg" class="font-semibold"></p>
-        </div>
-
-        <div id="search-results-list" class="space-y-3"></div>
-      </section>
-
-      <!-- PLAYLISTS TAB CONTENT -->
-      <section id="tab-playlists" class="tab-content hidden space-y-6">
-        <div class="flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <h2 class="text-2xl font-bold">My Playlists</h2>
-            <p class="text-sm text-neutral-400">Create custom playlists and organize your favorite songs.</p>
+      <div id="search-tab-content" class="flex-1 flex flex-col p-4 overflow-hidden">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3 bg-stone-950/60 p-2.5 rounded-xl border border-amber-900/30">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-folder-plus text-amber-400 text-xs"></i>
+            <span class="text-xs font-semibold text-stone-300">Add to:</span>
+            <select id="top-playlist-select" class="bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-lg text-xs py-1 px-2 border border-amber-900/50 focus:outline-none focus:border-amber-500 cursor-pointer font-medium max-w-[160px]">
+              <!-- Options populated dynamically in JS -->
+            </select>
           </div>
-          <button id="create-playlist-btn" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-2 transition-all shadow-md shadow-red-600/30">
-            <i class="fa-solid fa-plus"></i> New Playlist
-          </button>
+          <span id="results-count" class="text-[11px] text-stone-400">Ready</span>
         </div>
 
-        <!-- Active Playlist View (hidden by default) -->
-        <div id="active-playlist-view" class="hidden space-y-4 p-5 rounded-3xl bg-neutral-900/80 border border-neutral-800">
-          <div class="flex items-center justify-between flex-wrap gap-3">
-            <div class="flex items-center gap-3">
-              <button id="back-to-playlists-btn" class="p-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs">
-                <i class="fa-solid fa-arrow-left"></i> Back
-              </button>
-              <div>
-                <h3 id="playlist-view-title" class="text-xl font-bold text-white">Playlist Title</h3>
-                <p id="playlist-view-subtitle" class="text-xs text-neutral-400">0 tracks</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button id="play-all-playlist-btn" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-md">
-                <i class="fa-solid fa-play"></i> Play All
-              </button>
-              <button id="delete-playlist-btn" class="p-2 rounded-xl bg-neutral-800 hover:bg-red-900/50 hover:text-red-400 text-neutral-400 text-xs transition-colors" title="Delete Playlist">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
+        <div id="search-results-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-y-auto flex-1 pr-1">
+          <div class="col-span-full py-8 text-center text-stone-500 text-xs">
+            Search for videos or paste a YouTube URL in the top search bar.
           </div>
-          <div id="playlist-tracks-list" class="space-y-2 pt-2"></div>
         </div>
-
-        <div id="playlists-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-      </section>
+      </div>
 
       <!-- QUEUE TAB CONTENT -->
-      <section id="tab-queue" class="tab-content hidden space-y-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-2xl font-bold">Now Playing Queue</h2>
-            <p class="text-sm text-neutral-400"><span id="queue-subtitle-count">0</span> videos in queue</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <button id="clear-queue-btn" class="px-3.5 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-xs text-red-400 font-medium border border-neutral-700 transition-all flex items-center gap-1.5">
-              <i class="fa-solid fa-trash-can"></i> Clear Queue
+      <div id="queue-tab-content" class="hidden flex-1 flex flex-col p-4 overflow-hidden">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-medium text-stone-400">Up Next Queue</span>
+          <div class="flex items-center space-x-2">
+            <button id="save-queue-as-playlist-btn" class="text-xs text-amber-400 hover:text-amber-300 font-medium transition flex items-center gap-1">
+              <i class="fa-solid fa-floppy-disk"></i> Save
             </button>
+            <span class="text-stone-700">|</span>
+            <button id="clear-queue-btn" class="text-xs text-rose-400 hover:text-rose-300 font-medium transition">Clear</button>
           </div>
         </div>
-        <div id="queue-list" class="space-y-2"></div>
-      </section>
 
-    </main>
-  </div>
-
-  <!-- Footer Controls -->
-  <footer class="h-20 bg-neutral-900/95 backdrop-blur-xl border-t border-neutral-800/80 px-4 md:px-6 py-2.5 flex items-center justify-between shrink-0 sticky bottom-0 z-30 shadow-2xl">
-    
-    <!-- Track Info -->
-    <div class="flex items-center gap-3.5 w-1/3 min-w-[180px]">
-      <div class="relative w-12 h-12 rounded-xl overflow-hidden bg-neutral-800 shrink-0 border border-neutral-700/50 shadow-md">
-        <img 
-          id="footer-thumb" 
-          src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=90" 
-          alt="Thumbnail" 
-          class="w-12 h-12 rounded-xl object-cover shrink-0" 
-        />
-      </div>
-      <div class="overflow-hidden hidden sm:block">
-        <h4 id="footer-title" class="font-semibold text-sm text-neutral-100 truncate">No Video Selected</h4>
-        <p id="footer-artist" class="text-xs text-neutral-400 truncate mt-0.5">Select a video to play</p>
-      </div>
-    </div>
-
-    <!-- Playback Controls -->
-    <div class="flex items-center justify-center gap-3 md:gap-4 shrink-0">
-      <button id="shuffle-btn" class="p-2 text-neutral-400 hover:text-white transition-all" title="Shuffle Queue">
-        <i class="fa-solid fa-shuffle text-sm"></i>
-      </button>
-
-      <button id="prev-btn" class="p-2 text-neutral-300 hover:text-white transition-all" title="Previous Track">
-        <i class="fa-solid fa-backward-step text-base"></i>
-      </button>
-
-      <button id="play-pause-btn" class="w-10 h-10 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-lg shadow-red-600/40 transition-all hover:scale-105" title="Play/Pause">
-        <i id="play-pause-icon" class="fa-solid fa-play text-sm ml-0.5"></i>
-      </button>
-
-      <button id="next-btn" class="p-2 text-neutral-300 hover:text-white transition-all" title="Next Track">
-        <i class="fa-solid fa-forward-step text-base"></i>
-      </button>
-    </div>
-
-    <!-- Right Controls -->
-    <div class="flex items-center justify-end w-1/3 min-w-[140px] gap-3">
-      <a id="external-yt-link" href="#" target="_blank" class="text-neutral-400 hover:text-red-500 text-xs font-medium hidden sm:flex items-center gap-1 border border-neutral-800 px-3 py-1.5 rounded-lg bg-neutral-800/50">
-        <i class="fa-brands fa-youtube text-red-500"></i> YouTube
-      </a>
-    </div>
-
-  </footer>
-
-  <!-- CREATE PLAYLIST MODAL -->
-  <div id="create-playlist-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl relative">
-      <button id="close-playlist-modal" class="absolute top-4 right-4 text-neutral-400 hover:text-white text-lg">✕</button>
-
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center mx-auto shadow-lg shadow-red-600/30">
-          <i class="fa-solid fa-folder-plus text-white text-xl"></i>
+        <!-- Queue Items Container -->
+        <div id="queue-items-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 text-stone-500 text-xs">
+            <i class="fa-solid fa-layer-group text-2xl mb-2 opacity-40"></i>
+            Queue is empty. Add videos from search results or your saved playlists.
+          </div>
         </div>
-        <h3 class="text-xl font-bold text-white">Create New Playlist</h3>
-        <p class="text-xs text-neutral-400">Organize your music streams into custom collections.</p>
       </div>
 
+      <!-- PLAYLISTS TAB CONTENT -->
+      <div id="playlist-tab-content" class="hidden flex-1 flex flex-col p-4 overflow-hidden">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-medium text-stone-400">My Custom Playlists</span>
+          <button id="create-playlist-btn" class="text-xs bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 px-2.5 py-1 rounded-lg font-semibold transition flex items-center gap-1 shadow">
+            <i class="fa-solid fa-plus"></i> New List
+          </button>
+        </div>
+
+        <div id="saved-playlists-list" class="flex-1 overflow-y-auto space-y-3 pr-1">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- MODALS -->
+  <!-- API Key Config Modal -->
+  <div id="api-modal" class="hidden fixed inset-0 bg-stone-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-amber-900/60 rounded-2xl max-w-md w-full p-6 shadow-2xl shadow-amber-950/40">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-amber-200 flex items-center gap-2">
+          <i class="fa-solid fa-key text-yellow-400"></i> YouTube API v3 Key
+        </h3>
+        <button id="close-api-modal-btn" class="text-stone-400 hover:text-stone-200">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <p class="text-xs text-stone-400 mb-4 leading-relaxed">
+        Provide your YouTube Data API v3 key to enable search & metadata lookup. Your key will be stored securely in your local browser storage.
+      </p>
       <div class="space-y-4">
         <div>
-          <label class="text-xs font-semibold text-neutral-300 mb-1 block">Playlist Name</label>
+          <label class="block text-xs font-medium text-stone-300 mb-1">API Key</label>
+          <input 
+            type="password" 
+            id="api-key-input" 
+            placeholder="AIzaSy..." 
+            class="w-full bg-stone-800 border border-amber-900/50 rounded-xl px-3.5 py-2 text-sm text-stone-100 focus:outline-none focus:border-amber-500"
+          >
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button id="clear-api-key-btn" class="px-3 py-1.5 text-xs text-rose-400 hover:text-rose-300">Remove Key</button>
+          <button id="save-api-key-btn" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 rounded-xl text-xs font-bold shadow-md">Save Key</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Playlist Modal -->
+  <div id="playlist-modal" class="hidden fixed inset-0 bg-stone-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-amber-900/60 rounded-2xl max-w-md w-full p-6 shadow-2xl shadow-amber-950/40">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-amber-200 flex items-center gap-2">
+          <i class="fa-solid fa-folder-plus text-amber-400"></i> Create New Playlist
+        </h3>
+        <button id="close-playlist-modal-btn" class="text-stone-400 hover:text-stone-200">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-stone-300 mb-1">Playlist Name</label>
           <input 
             type="text" 
-            id="playlist-name-input"
-            placeholder="e.g. Chill Beats, Gym Pump, Favorites..." 
-            class="w-full bg-neutral-800 border border-neutral-700 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-neutral-100 outline-none"
-          />
+            id="playlist-name-input" 
+            placeholder="e.g. Golden Classics, Study Beats" 
+            class="w-full bg-stone-800 border border-amber-900/50 rounded-xl px-3.5 py-2 text-sm text-stone-100 focus:outline-none focus:border-amber-500"
+          >
+        </div>
+        <div class="flex justify-end space-x-2">
+          <button id="save-new-playlist-btn" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 rounded-xl text-xs font-bold shadow-md">Create</button>
         </div>
       </div>
-
-      <div class="flex flex-col gap-2 pt-2">
-        <button id="save-playlist-btn" class="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm shadow-lg shadow-red-600/30">
-          Create Playlist
-        </button>
-      </div>
     </div>
   </div>
 
-  <!-- ADD TO PLAYLIST PICKER MODAL -->
-  <div id="add-to-playlist-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-3xl p-6 space-y-4 shadow-2xl relative">
-      <button id="close-add-modal" class="absolute top-4 right-4 text-neutral-400 hover:text-white text-lg">✕</button>
-
-      <div class="text-left space-y-1">
-        <h3 class="text-lg font-bold text-white">Add to Playlist</h3>
-        <p id="add-modal-track-title" class="text-xs text-neutral-400 truncate">Select playlist...</p>
-      </div>
-
-      <div id="playlists-picker-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-    </div>
-  </div>
-
-  <!-- API Settings Modal -->
-  <div id="api-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl relative">
-      <button id="close-api-modal" class="absolute top-4 right-4 text-neutral-400 hover:text-white text-lg">✕</button>
-
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center mx-auto shadow-lg">
-          <i class="fa-solid fa-key text-white text-xl"></i>
+  <!-- Edit Playlist Drawer / Modal -->
+  <div id="edit-playlist-modal" class="hidden fixed inset-0 bg-stone-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-amber-900/60 rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col p-6 shadow-2xl shadow-amber-950/40">
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-amber-900/40">
+        <div class="flex-1 mr-4">
+          <label class="block text-[10px] uppercase font-bold tracking-wider text-amber-500 mb-0.5">Playlist Name</label>
+          <input 
+            type="text" 
+            id="edit-playlist-name-input" 
+            class="w-full bg-stone-950/60 border border-amber-900/50 focus:border-amber-500 rounded-lg px-2.5 py-1 text-base font-bold text-amber-100 focus:outline-none"
+          >
         </div>
-        <h3 class="text-xl font-bold text-white">YouTube API Key Setup</h3>
-        <p class="text-xs text-neutral-400 leading-relaxed">
-          Optionally add your YouTube Data API Key to enable instant live YouTube search.
-        </p>
+        <button id="close-edit-playlist-modal-btn" class="text-stone-400 hover:text-stone-200 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
       </div>
 
-      <div class="space-y-2">
-        <label class="text-xs font-semibold text-neutral-300">API Key</label>
-        <input 
-          type="password" 
-          id="api-key-input"
-          placeholder="AIzaSy..." 
-          class="w-full bg-neutral-800 border border-neutral-700 focus:border-red-500 rounded-xl px-4 py-3 text-sm text-neutral-100 outline-none font-mono"
-        />
+      <!-- Playlist Items Manager List -->
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-semibold text-stone-400">Videos (<span id="edit-playlist-item-count">0</span>)</span>
+        <span class="text-[11px] text-stone-500">Click icon to remove or reorder</span>
       </div>
 
-      <div class="flex flex-col gap-2.5 pt-2">
-        <button id="save-api-key-btn" class="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm shadow-lg">
-          Save Key
+      <div id="edit-playlist-items-list" class="flex-1 overflow-y-auto space-y-2 pr-1 my-2 min-h-[200px]">
+        <!-- Populated via JS -->
+      </div>
+
+      <div class="flex items-center justify-between pt-3 mt-2 border-t border-amber-900/40">
+        <button id="delete-editing-playlist-btn" class="text-xs text-rose-400 hover:text-rose-300 font-medium flex items-center gap-1.5 px-2 py-1 transition">
+          <i class="fa-solid fa-trash-can"></i> Delete Playlist
+        </button>
+        <button id="save-edit-playlist-btn" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 rounded-xl text-xs font-bold shadow-md">
+          Done
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Engine Modal -->
-  <div id="engine-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-neutral-900 border border-neutral-800 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl relative">
-      <button id="close-engine-modal" class="absolute top-4 right-4 text-neutral-400 hover:text-white text-lg">✕</button>
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
 
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center mx-auto shadow-lg">
-          <i class="fa-solid fa-network-wired text-white text-xl"></i>
-        </div>
-        <h3 class="text-xl font-bold text-white">Select Stream Mirror</h3>
-        <p class="text-xs text-neutral-400 leading-relaxed">
-          If your video fails to play or says restricted, click any mirror below to switch engines.
-        </p>
-      </div>
-
-      <div class="space-y-2">
-        <button data-engine="nocookie" class="engine-btn w-full p-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-left text-xs text-white font-semibold flex items-center justify-between border border-neutral-700">
-          <span>🛡️ YouTube No-Cookie (Standard)</span>
-        </button>
-        <button data-engine="yewtu" class="engine-btn w-full p-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-left text-xs text-white font-semibold flex items-center justify-between border border-neutral-700">
-          <span>🌐 Invidious Proxy Mirror (Unblocked)</span>
-        </button>
-        <button data-engine="piped" class="engine-btn w-full p-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-left text-xs text-white font-semibold flex items-center justify-between border border-neutral-700">
-          <span>⚡ Piped Proxy Mirror (Fastest)</span>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast Container -->
-  <div id="toast-container" class="fixed bottom-24 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
+  <!-- JAVASCRIPT APP LOGIC -->
   <script>
-    const state = {
-      currentTrack: null,
-      queue: [],
-      currentIndex: -1,
-      playlists: JSON.parse(localStorage.getItem('sp_playlists') || '[]'),
-      activePlaylistId: null,
-      trackToAdd: null,
-      apiKey: localStorage.getItem('sp_yt_api_key') || '',
-      engineMode: localStorage.getItem('sp_engine_mode') || 'nocookie',
-      isPlaying: false,
-      videoVisible: true,
-      endCheckInterval: null
+    // --- Application State Management ---
+    const STATE = {
+      apiKey: localStorage.getItem('clean_tube_api_key') || '',
+      queue: JSON.parse(localStorage.getItem('clean_tube_queue') || '[]'),
+      playlists: JSON.parse(localStorage.getItem('clean_tube_playlists') || '[]'),
+      currentVideoIndex: -1,
+      isShuffle: false,
+      shuffledOrder: [], // Mapping of original queue indices when shuffled
+      editingPlaylistIndex: -1 // Index of playlist currently being edited
     };
 
-    // Preset Default Popular Tracks
-    const defaultTracks = [
-      { id: 'jfKfPfyJRdk', title: 'lofi hip hop radio - beats to relax/study to', channel: 'Lofi Girl', thumbnail: 'https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg' },
-      { id: '4xDzrJKXOOY', title: 'synthwave radio - chill synth / retro beats', channel: 'Lofi Girl', thumbnail: 'https://i.ytimg.com/vi/4xDzrJKXOOY/hqdefault.jpg' },
-      { id: '5qap5aO4i9A', title: 'Lofi Hip Hop Beats 24/7', channel: 'Chillhop Music', thumbnail: 'https://i.ytimg.com/vi/5qap5aO4i9A/hqdefault.jpg' },
-      { id: 'DWcJFNfaw9c', title: 'Best Hits Music Playlist', channel: 'Music Top', thumbnail: 'https://i.ytimg.com/vi/DWcJFNfaw9c/hqdefault.jpg' }
-    ];
-
-    // Elements
-    const elements = {
-      mainPlayerFrame: document.getElementById('main-player-frame'),
-      emptyScreenMsg: document.getElementById('empty-screen-msg'),
-      quickFixOverlay: document.getElementById('quick-fix-overlay'),
-      directBypassBtn: document.getElementById('direct-bypass-btn'),
-      
-      headerSearchInput: document.getElementById('header-search-input'),
+    // DOM References
+    const dom = {
+      iframe: document.getElementById('youtube-iframe'),
+      emptyState: document.getElementById('player-empty-state'),
+      videoTitle: document.getElementById('current-video-title'),
+      videoChannel: document.getElementById('current-video-channel'),
+      searchInput: document.getElementById('search-input'),
       searchForm: document.getElementById('search-form'),
-      mainSearchForm: document.getElementById('main-search-form'),
-      mainSearchInput: document.getElementById('main-search-input'),
       searchResultsList: document.getElementById('search-results-list'),
-      searchErrorBox: document.getElementById('search-error-box'),
-      searchErrorMsg: document.getElementById('search-error-msg'),
-
-      playlistsGrid: document.getElementById('playlists-grid'),
-      playlistsCount: document.getElementById('playlists-count'),
-      activePlaylistView: document.getElementById('active-playlist-view'),
-      playlistViewTitle: document.getElementById('playlist-view-title'),
-      playlistViewSubtitle: document.getElementById('playlist-view-subtitle'),
-      playlistTracksList: document.getElementById('playlist-tracks-list'),
-      backToPlaylistsBtn: document.getElementById('back-to-playlists-btn'),
-      playAllPlaylistBtn: document.getElementById('play-all-playlist-btn'),
-      deletePlaylistBtn: document.getElementById('delete-playlist-btn'),
-      
-      createPlaylistBtn: document.getElementById('create-playlist-btn'),
-      createPlaylistModal: document.getElementById('create-playlist-modal'),
-      closePlaylistModal: document.getElementById('close-playlist-modal'),
-      playlistNameInput: document.getElementById('playlist-name-input'),
-      savePlaylistBtn: document.getElementById('save-playlist-btn'),
-
-      addToPlaylistModal: document.getElementById('add-to-playlist-modal'),
-      closeAddModal: document.getElementById('close-add-modal'),
-      addModalTrackTitle: document.getElementById('add-modal-track-title'),
-      playlistsPickerList: document.getElementById('playlists-picker-list'),
-
-      queueList: document.getElementById('queue-list'),
+      resultsCount: document.getElementById('results-count'),
+      topPlaylistSelect: document.getElementById('top-playlist-select'),
+      queueItemsList: document.getElementById('queue-items-list'),
+      savedPlaylistsList: document.getElementById('saved-playlists-list'),
       queueCount: document.getElementById('queue-count'),
-      queueSubtitleCount: document.getElementById('queue-subtitle-count'),
-      clearQueueBtn: document.getElementById('clear-queue-btn'),
-
-      shuffleBtn: document.getElementById('shuffle-btn'),
-      playPauseBtn: document.getElementById('play-pause-btn'),
-      playPauseIcon: document.getElementById('play-pause-icon'),
+      shuffleBtn: document.getElementById('shuffle-toggle-btn'),
+      shuffleStatusPill: document.getElementById('shuffle-status-pill'),
       prevBtn: document.getElementById('prev-btn'),
       nextBtn: document.getElementById('next-btn'),
-
-      footerThumb: document.getElementById('footer-thumb'),
-      footerTitle: document.getElementById('footer-title'),
-      footerArtist: document.getElementById('footer-artist'),
-      playingTitle: document.getElementById('playing-title'),
-      playingArtist: document.getElementById('playing-artist'),
-      externalYtLink: document.getElementById('external-yt-link'),
-      
-      networkEngineBtn: document.getElementById('network-engine-btn'),
-      engineLabel: document.getElementById('engine-label'),
-      engineModal: document.getElementById('engine-modal'),
-      closeEngineModal: document.getElementById('close-engine-modal'),
-
-      toggleVideoBtn: document.getElementById('toggle-video-btn'),
-      toggleVideoIcon: document.getElementById('toggle-video-icon'),
-      toggleVideoLabel: document.getElementById('toggle-video-label'),
-      inlineToggleVideo: document.getElementById('inline-toggle-video'),
-      inlineVideoIcon: document.getElementById('inline-video-icon'),
-      inlineVideoLabel: document.getElementById('inline-video-label'),
-      playerScreenWrapper: document.getElementById('player-screen-wrapper'),
-      audioModeBanner: document.getElementById('audio-mode-banner'),
-      restoreVideoBtn: document.getElementById('restore-video-btn'),
-
-      settingsBtn: document.getElementById('settings-btn'),
       apiModal: document.getElementById('api-modal'),
-      closeApiModal: document.getElementById('close-api-modal'),
       apiKeyInput: document.getElementById('api-key-input'),
-      saveApiKeyBtn: document.getElementById('save-api-key-btn'),
-
+      apiStatusBadge: document.getElementById('api-status-badge'),
+      playlistModal: document.getElementById('playlist-modal'),
+      playlistNameInput: document.getElementById('playlist-name-input'),
+      editPlaylistModal: document.getElementById('edit-playlist-modal'),
+      editPlaylistNameInput: document.getElementById('edit-playlist-name-input'),
+      editPlaylistItemCount: document.getElementById('edit-playlist-item-count'),
+      editPlaylistItemsList: document.getElementById('edit-playlist-items-list'),
+      tabSearchBtn: document.getElementById('tab-search-btn'),
+      tabQueueBtn: document.getElementById('tab-queue-btn'),
+      tabPlaylistBtn: document.getElementById('tab-playlist-btn'),
+      searchTabContent: document.getElementById('search-tab-content'),
+      queueTabContent: document.getElementById('queue-tab-content'),
+      playlistTabContent: document.getElementById('playlist-tab-content'),
       toastContainer: document.getElementById('toast-container')
     };
 
-    function toggleVideoDisplay(show) {
-      if (typeof show === 'boolean') {
-        state.videoVisible = show;
-      } else {
-        state.videoVisible = !state.videoVisible;
-      }
-
-      if (state.videoVisible) {
-        elements.playerScreenWrapper.classList.remove('hidden');
-        elements.audioModeBanner.classList.add('hidden');
-        elements.toggleVideoIcon.className = 'fa-solid fa-video text-red-400';
-        elements.toggleVideoLabel.textContent = 'Video On';
-        elements.inlineVideoIcon.className = 'fa-solid fa-eye-slash';
-        elements.inlineVideoLabel.textContent = 'Hide Screen';
-        showToast('Video screen enabled', 'info');
-      } else {
-        elements.playerScreenWrapper.classList.add('hidden');
-        elements.audioModeBanner.classList.remove('hidden');
-        elements.toggleVideoIcon.className = 'fa-solid fa-video-slash text-neutral-400';
-        elements.toggleVideoLabel.textContent = 'Video Off';
-        elements.inlineVideoIcon.className = 'fa-solid fa-eye';
-        elements.inlineVideoLabel.textContent = 'Show Screen';
-        showToast('Audio-only mode enabled', 'info');
-      }
+    // Save App State to LocalStorage
+    function persistState() {
+      localStorage.setItem('clean_tube_api_key', STATE.apiKey);
+      localStorage.setItem('clean_tube_queue', JSON.stringify(STATE.queue));
+      localStorage.setItem('clean_tube_playlists', JSON.stringify(STATE.playlists));
     }
 
-    elements.toggleVideoBtn.addEventListener('click', () => toggleVideoDisplay());
-    elements.inlineToggleVideo.addEventListener('click', () => toggleVideoDisplay());
-    elements.restoreVideoBtn.addEventListener('click', () => toggleVideoDisplay(true));
-
-    function showToast(msg, type = 'info') {
+    // UI Toast Notification helper
+    function showToast(message, type = 'info') {
       const toast = document.createElement('div');
-      toast.className = `px-4 py-2.5 rounded-xl text-xs font-semibold shadow-xl border backdrop-blur-md transition-all duration-300 flex items-center gap-2 ${
-        type === 'success' ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-200' : 'bg-neutral-900/90 border-neutral-700/80 text-neutral-200'
-      }`;
-      toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : 'fa-circle-info text-red-400'}"></i> ${msg}`;
-      elements.toastContainer.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-    }
-
-    function savePlaylistsToStorage() {
-      localStorage.setItem('sp_playlists', JSON.stringify(state.playlists));
-      renderPlaylists();
-    }
-
-    function playNextTrackInQueue() {
-      if (state.queue.length <= 1) return;
+      const bg = type === 'error' ? 'bg-rose-700' : type === 'success' ? 'bg-emerald-600' : 'bg-gradient-to-r from-amber-500 to-yellow-500 text-stone-950 font-medium';
+      const textColor = type === 'info' ? 'text-stone-950' : 'text-white';
+      toast.className = `${bg} ${textColor} text-xs px-4 py-2.5 rounded-xl shadow-xl shadow-amber-950/20 flex items-center space-x-2 transition-all duration-300 opacity-0 transform translate-y-2`;
+      toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> <span>${message}</span>`;
+      dom.toastContainer.appendChild(toast);
       
-      // Since current playing song is always at index 0, 
-      // the next song to play is always at index 1!
-      const nextTrack = state.queue[1];
+      requestAnimationFrame(() => {
+        toast.classList.remove('opacity-0', 'translate-y-2');
+      });
 
-      if (nextTrack) {
-        // Shift out the completed song and play the next one as #1
-        state.queue.shift();
-        playTrack(nextTrack, false);
-      }
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
     }
 
-    window.addEventListener('message', (event) => {
-      try {
-        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-        if (data && data.event === 'infoDelivery' && data.info) {
-          if (data.info.playerState === 0) {
-            playNextTrackInQueue();
-          }
-        }
-      } catch (err) {
-        // Ignore non-JSON messages
-      }
-    });
-
-    function setupAutoNextPoller() {
-      if (state.endCheckInterval) {
-        clearInterval(state.endCheckInterval);
-      }
-
-      state.endCheckInterval = setInterval(() => {
-        if (elements.mainPlayerFrame && state.isPlaying) {
-          try {
-            elements.mainPlayerFrame.contentWindow.postMessage(JSON.stringify({
-              event: 'listening',
-              id: 1
-            }), '*');
-          } catch (e) {}
-        }
-      }, 1000);
-    }
-
-    function playTrack(track, addToQueueIfNeeded = true) {
-      if (!track || !track.id) return;
-
-      state.currentTrack = track;
-      state.isPlaying = true;
-
-      // Ensure the currently playing track always stays at position #1 (index 0) in the queue
-      const existingIdx = state.queue.findIndex(t => t.id === track.id);
-      if (existingIdx !== -1) {
-        // Remove from current position and move to top
-        state.queue.splice(existingIdx, 1);
-      }
-      state.queue.unshift(track);
-      state.currentIndex = 0;
-
-      elements.emptyScreenMsg.classList.add('hidden');
-      elements.mainPlayerFrame.classList.remove('hidden');
-      elements.quickFixOverlay.classList.remove('hidden');
-
-      elements.footerTitle.textContent = track.title;
-      elements.footerArtist.textContent = track.channel;
-      elements.footerThumb.src = track.thumbnail;
-      elements.playingTitle.textContent = track.title;
-      elements.playingArtist.textContent = track.channel;
-      elements.externalYtLink.href = `https://www.youtube.com/watch?v=${track.id}`;
-      elements.playPauseIcon.className = 'fa-solid fa-pause text-sm';
-
-      let streamUrl = '';
-      if (state.engineMode === 'nocookie') {
-        streamUrl = `https://www.youtube-nocookie.com/embed/${track.id}?autoplay=1&enablejsapi=1&rel=0`;
-      } else if (state.engineMode === 'piped') {
-        streamUrl = `https://piped.video/embed/${track.id}?autoplay=1`;
-      } else if (state.engineMode === 'yewtu') {
-        streamUrl = `https://yewtu.be/embed/${track.id}?autoplay=1`;
+    // Update API Key Status
+    function updateApiStatusUI() {
+      if (STATE.apiKey) {
+        dom.apiStatusBadge.textContent = 'API Key Configured';
+        dom.apiStatusBadge.className = 'hidden sm:inline text-amber-400 font-semibold';
       } else {
-        streamUrl = `https://www.youtube.com/embed/${track.id}?autoplay=1&enablejsapi=1&rel=0`;
+        dom.apiStatusBadge.textContent = 'Set API Key';
+        dom.apiStatusBadge.className = 'hidden sm:inline text-yellow-500 font-semibold';
       }
-
-      elements.mainPlayerFrame.src = streamUrl;
-
-      setupAutoNextPoller();
-
-      showToast(`Now Playing: ${track.title}`, 'success');
-      renderQueue();
     }
 
-    async function performSearch(query) {
-      if (!query || !query.trim()) return;
-      const q = query.trim();
+    // Extract YouTube ID from video query or URL
+    function parseYouTubeVideoId(input) {
+      const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      const match = input.match(regex);
+      if (match) return match[1];
+      if (input.length === 11 && !input.includes(' ')) return input;
+      return null;
+    }
 
-      elements.searchErrorBox.classList.add('hidden');
-      elements.searchResultsList.innerHTML = `
-        <div class="p-8 text-center text-neutral-400 flex flex-col items-center justify-center gap-3">
-          <i class="fa-solid fa-spinner fa-spin text-2xl text-red-500"></i>
-          <p class="text-xs font-medium">Searching music...</p>
-        </div>
-      `;
+    // Fetch Videos via API or fallback direct URL handling
+    async function searchYouTube(query) {
+      if (!query.trim()) return;
 
-      const match = q.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/) || q.match(/^[\w-]{11}$/);
-      if (match && match[1]) {
-        const videoId = match[1];
-        const track = {
-          id: videoId,
-          title: `Direct Music Stream (${videoId})`,
-          channel: 'YouTube Direct',
-          thumbnail: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+      const directVideoId = parseYouTubeVideoId(query);
+      if (directVideoId) {
+        // Direct link provided
+        const directVideo = {
+          id: directVideoId,
+          title: `YouTube Video (${directVideoId})`,
+          channel: 'Direct Link',
+          thumbnail: `https://i.ytimg.com/vi/${directVideoId}/hqdefault.jpg`
         };
-        renderSearchResults([track]);
-        playTrack(track);
+        renderSearchResults([directVideo]);
         return;
       }
 
-      if (state.apiKey) {
-        try {
-          const apiRes = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(q)}&type=video&key=${state.apiKey}`);
-          const apiData = await apiRes.json();
-          if (apiData.items && apiData.items.length > 0) {
-            const tracks = apiData.items.map(item => ({
-              id: item.id.videoId,
-              title: item.snippet.title,
-              channel: item.snippet.channelTitle,
-              thumbnail: item.snippet.thumbnails?.medium?.url || `https://i.ytimg.com/vi/${item.id.videoId}/hqdefault.jpg`
-            }));
-            renderSearchResults(tracks);
-            return;
-          }
-        } catch (err) {
-          console.warn('API key search failed, attempting proxy endpoints...', err);
-        }
-      }
-
-      const searchEndpoints = [
-        `https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(q)}&filter=music`,
-        `https://api.piped.privacydev.net/search?q=${encodeURIComponent(q)}&filter=videos`,
-        `https://yewtu.be/api/v1/search?q=${encodeURIComponent(q)}&type=video`,
-        `https://invidious.nerdvpn.de/api/v1/search?q=${encodeURIComponent(q)}&type=video`
-      ];
-
-      for (const endpoint of searchEndpoints) {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 2500);
-
-          const res = await fetch(endpoint, { signal: controller.signal });
-          clearTimeout(timeoutId);
-
-          if (!res.ok) continue;
-          const data = await res.json();
-
-          let results = Array.isArray(data) ? data : (data.items && Array.isArray(data.items) ? data.items : []);
-
-          if (results.length > 0) {
-            const tracks = results.slice(0, 15).map(item => {
-              const videoId = item.videoId || (item.url ? item.url.split('v=')[1] : null);
-              return {
-                id: videoId,
-                title: item.title,
-                channel: item.uploaderName || item.author || 'Artist',
-                thumbnail: item.thumbnail || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
-              };
-            }).filter(t => t.id);
-
-            if (tracks.length > 0) {
-              renderSearchResults(tracks);
-              return;
-            }
-          }
-        } catch (e) {
-          console.warn(`Search failed on ${endpoint}...`, e);
-        }
-      }
-
-      elements.searchErrorMsg.innerHTML = 'Public search proxies are slow right now. Paste any <strong>YouTube link or Video ID</strong> directly into search!';
-      elements.searchErrorBox.classList.remove('hidden');
-      renderSearchResults(defaultTracks);
-    }
-
-    function renderSearchResults(tracks) {
-      elements.searchResultsList.innerHTML = '';
-      tracks.forEach(track => {
-        const card = document.createElement('div');
-        card.className = 'p-3 rounded-2xl bg-neutral-900/80 hover:bg-neutral-800 border border-neutral-800 flex items-center justify-between gap-3 transition-all group';
-        
-        const safeTitle = track.title.replace(/"/g, '&quot;');
-        const safeChannel = track.channel.replace(/"/g, '&quot;');
-
-        card.innerHTML = `
-          <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1 track-play-area">
-            <div class="relative w-20 h-12 rounded-xl overflow-hidden bg-neutral-800 shrink-0 border border-neutral-700/50">
-              <img src="${track.thumbnail}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-              <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <i class="fa-solid fa-play text-white text-xs"></i>
-              </div>
-            </div>
-            <div class="overflow-hidden">
-              <h4 class="font-semibold text-xs text-neutral-100 truncate group-hover:text-red-400 transition-colors">${safeTitle}</h4>
-              <p class="text-[11px] text-neutral-400 truncate mt-0.5">${safeChannel}</p>
-            </div>
-          </div>
-          <div class="flex items-center gap-1">
-            <button class="add-playlist-btn p-2 text-neutral-400 hover:text-red-400 transition-colors" title="Add to Playlist">
-              <i class="fa-solid fa-folder-plus text-xs"></i>
-            </button>
-            <button class="add-queue-btn p-2 text-neutral-400 hover:text-white transition-colors" title="Add to Queue">
-              <i class="fa-solid fa-plus text-xs"></i>
-            </button>
-          </div>
-        `;
-
-        card.querySelector('.track-play-area').addEventListener('click', () => {
-          playTrack(track);
-        });
-
-        card.querySelector('.add-playlist-btn').addEventListener('click', (e) => {
-          e.stopPropagation();
-          openAddToPlaylistModal(track);
-        });
-
-        card.querySelector('.add-queue-btn').addEventListener('click', (e) => {
-          e.stopPropagation();
-          state.queue.push(track);
-          renderQueue();
-          showToast(`Added to queue: ${track.title}`, 'success');
-        });
-
-        elements.searchResultsList.appendChild(card);
-      });
-    }
-
-    function renderPlaylists() {
-      elements.playlistsCount.textContent = state.playlists.length;
-      elements.playlistsGrid.innerHTML = '';
-
-      if (state.playlists.length === 0) {
-        elements.playlistsGrid.innerHTML = `
-          <div class="col-span-full p-8 text-center text-neutral-500 rounded-3xl border border-dashed border-neutral-800 space-y-2">
-            <i class="fa-solid fa-layer-group text-3xl text-neutral-700"></i>
-            <p class="text-sm font-semibold text-neutral-400">No playlists yet</p>
-            <p class="text-xs text-neutral-600">Click "New Playlist" above to create your first collection!</p>
-          </div>
-        `;
+      if (!STATE.apiKey) {
+        showToast('Please configure a YouTube API v3 Key to search.', 'error');
+        dom.apiModal.classList.remove('hidden');
         return;
       }
 
-      state.playlists.forEach(pl => {
-        const card = document.createElement('div');
-        card.className = 'p-5 rounded-3xl bg-neutral-900/80 hover:bg-neutral-800/80 border border-neutral-800/80 cursor-pointer transition-all hover:scale-[1.02] flex flex-col justify-between space-y-4 group';
-        
-        const count = pl.tracks ? pl.tracks.length : 0;
-        const thumb = count > 0 && pl.tracks[0].thumbnail ? pl.tracks[0].thumbnail : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600&q=90';
+      dom.resultsCount.textContent = 'Searching...';
 
-        card.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-2xl bg-neutral-800 overflow-hidden shrink-0 border border-neutral-700/50 relative">
-              <img src="${thumb}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-            </div>
-            <div class="overflow-hidden">
-              <h4 class="font-bold text-sm text-white truncate group-hover:text-red-400 transition-colors">${pl.name}</h4>
-              <p class="text-xs text-neutral-400 mt-0.5">${count} ${count === 1 ? 'track' : 'tracks'}</p>
-            </div>
-          </div>
-          <div class="flex items-center justify-between pt-2 border-t border-neutral-800/60 text-xs text-neutral-400">
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-play text-red-500 text-[10px]"></i> Open Playlist</span>
-            <i class="fa-solid fa-chevron-right text-neutral-600 group-hover:translate-x-1 transition-transform"></i>
-          </div>
-        `;
+      try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=15&q=${encodeURIComponent(query)}&type=video&key=${STATE.apiKey}`);
+        const data = await res.json();
 
-        card.addEventListener('click', () => openPlaylistView(pl.id));
-        elements.playlistsGrid.appendChild(card);
-      });
+        if (data.error) {
+          throw new Error(data.error.message || 'API Request failed');
+        }
+
+        const items = data.items.map(item => ({
+          id: item.id.videoId,
+          title: item.snippet.title,
+          channel: item.snippet.channelTitle,
+          thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url
+        }));
+
+        renderSearchResults(items);
+        dom.resultsCount.textContent = `${items.length} items found`;
+      } catch (err) {
+        console.error(err);
+        showToast(err.message, 'error');
+        dom.resultsCount.textContent = 'Error fetching results';
+      }
     }
 
-    function openPlaylistView(playlistId) {
-      const pl = state.playlists.find(p => p.id === playlistId);
-      if (!pl) return;
-
-      state.activePlaylistId = playlistId;
-      elements.playlistViewTitle.textContent = pl.name;
-      elements.playlistViewSubtitle.textContent = `${pl.tracks.length} ${pl.tracks.length === 1 ? 'track' : 'tracks'}`;
+    function updateTopPlaylistDropdown() {
+      if (!dom.topPlaylistSelect) return;
+      const currentVal = dom.topPlaylistSelect.value;
       
-      elements.playlistsGrid.classList.add('hidden');
-      elements.activePlaylistView.classList.remove('hidden');
-
-      renderPlaylistTracks(pl);
+      let html = `<option value="queue">Current Queue</option>`;
+      if (STATE.playlists.length) {
+        html += STATE.playlists.map((pl, idx) => `<option value="${idx}">Playlist: ${escapeHtml(pl.name)}</option>`).join('');
+      }
+      
+      dom.topPlaylistSelect.innerHTML = html;
+      if (currentVal && dom.topPlaylistSelect.querySelector(`option[value="${currentVal}"]`)) {
+        dom.topPlaylistSelect.value = currentVal;
+      }
     }
 
-    function renderPlaylistTracks(pl) {
-      elements.playlistTracksList.innerHTML = '';
-
-      if (!pl.tracks || pl.tracks.length === 0) {
-        elements.playlistTracksList.innerHTML = `
-          <div class="p-8 text-center text-neutral-500 space-y-1">
-            <i class="fa-solid fa-music text-2xl text-neutral-700 mb-2"></i>
-            <p class="text-xs font-semibold">This playlist is empty</p>
-            <p class="text-[11px] text-neutral-600">Search videos and click the folder icon to add songs here!</p>
-          </div>
-        `;
+    // Render Search Results with updated simplified action buttons
+    function renderSearchResults(videos) {
+      dom.searchResultsList.innerHTML = '';
+      if (!videos.length) {
+        dom.searchResultsList.innerHTML = `<div class="col-span-full py-8 text-center text-stone-500 text-sm">No videos found.</div>`;
         return;
       }
 
-      pl.tracks.forEach((track, idx) => {
-        const item = document.createElement('div');
-        item.className = 'p-3 rounded-2xl bg-neutral-800/40 hover:bg-neutral-800 border border-neutral-700/40 flex items-center justify-between gap-3';
-        
-        const safeTitle = track.title.replace(/"/g, '&quot;');
-        const safeChannel = track.channel.replace(/"/g, '&quot;');
-
-        item.innerHTML = `
-          <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1 track-click">
-            <span class="text-xs font-mono font-bold w-5 text-center text-neutral-500">${idx + 1}</span>
-            <div class="relative w-12 h-9 rounded-lg overflow-hidden bg-neutral-800 shrink-0">
-              <img src="${track.thumbnail}" alt="" class="w-full h-full object-cover" />
+      videos.forEach(video => {
+        const card = document.createElement('div');
+        card.className = 'bg-stone-950/50 hover:bg-stone-800/80 border border-amber-900/30 hover:border-amber-600/50 rounded-xl p-2.5 flex flex-col justify-between transition group';
+        card.innerHTML = `
+          <div>
+            <div class="relative aspect-video rounded-lg overflow-hidden mb-2 bg-stone-900">
+              <img src="${video.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy">
+              <button class="play-now-btn absolute inset-0 bg-stone-950/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-amber-300 transition">
+                <i class="fa-solid fa-play text-2xl drop-shadow-md"></i>
+              </button>
             </div>
-            <div class="overflow-hidden">
-              <h4 class="font-semibold text-xs text-neutral-100 truncate">${safeTitle}</h4>
-              <p class="text-[11px] text-neutral-400 truncate mt-0.5">${safeChannel}</p>
-            </div>
+            <h4 class="text-xs font-semibold text-stone-200 line-clamp-2 leading-snug mb-1">${escapeHtml(video.title)}</h4>
+            <p class="text-[11px] text-amber-500/80">${escapeHtml(video.channel)}</p>
           </div>
-          <button class="remove-track-btn p-2 text-neutral-400 hover:text-red-400 transition-colors" title="Remove Track">
-            <i class="fa-solid fa-trash text-xs"></i>
-          </button>
+          <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-amber-900/20">
+            <button class="add-selected-btn w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 py-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 shadow">
+              <i class="fa-solid fa-plus text-xs"></i> <span>Add</span>
+            </button>
+          </div>
         `;
 
-        item.querySelector('.track-click').addEventListener('click', () => {
-          playTrack(track);
+        // Event Bindings
+        card.querySelector('.play-now-btn').addEventListener('click', () => {
+          addToQueue(video, true);
         });
 
-        item.querySelector('.remove-track-btn').addEventListener('click', (e) => {
-          e.stopPropagation();
-          pl.tracks.splice(idx, 1);
-          savePlaylistsToStorage();
-          openPlaylistView(pl.id);
-          showToast('Track removed', 'info');
+        // Add to the globally selected top playlist or queue
+        card.querySelector('.add-selected-btn').addEventListener('click', () => {
+          const selectedTarget = dom.topPlaylistSelect.value;
+          if (selectedTarget === 'queue') {
+            addToQueue(video, false);
+          } else {
+            const pIdx = parseInt(selectedTarget, 10);
+            if (!isNaN(pIdx) && STATE.playlists[pIdx]) {
+              STATE.playlists[pIdx].videos.push(video);
+              persistState();
+              renderPlaylistsUI();
+              showToast(`Added to "${STATE.playlists[pIdx].name}"`);
+            }
+          }
         });
 
-        elements.playlistTracksList.appendChild(item);
+        dom.searchResultsList.appendChild(card);
       });
     }
 
-    function openAddToPlaylistModal(track) {
-      state.trackToAdd = track;
-      elements.addModalTrackTitle.textContent = track.title;
-      elements.playlistsPickerList.innerHTML = '';
-
-      if (state.playlists.length === 0) {
-        elements.playlistsPickerList.innerHTML = `
-          <div class="p-4 text-center text-neutral-400 text-xs">
-            No playlists found. Create a playlist first!
-          </div>
-        `;
-      } else {
-        state.playlists.forEach(pl => {
-          const btn = document.createElement('button');
-          btn.className = 'w-full p-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-left text-xs font-semibold text-white flex items-center justify-between border border-neutral-700/60 transition-colors';
-          btn.innerHTML = `
-            <span class="truncate">${pl.name}</span>
-            <span class="text-[11px] text-neutral-400 font-normal shrink-0 ml-2">${pl.tracks.length} tracks</span>
-          `;
-
-          btn.addEventListener('click', () => {
-            const exists = pl.tracks.some(t => t.id === track.id);
-            if (!exists) {
-              pl.tracks.push(track);
-              savePlaylistsToStorage();
-              showToast(`Added to "${pl.name}"`, 'success');
-            } else {
-              showToast(`Already in "${pl.name}"`, 'info');
-            }
-            elements.addToPlaylistModal.classList.add('hidden');
-          });
-
-          elements.playlistsPickerList.appendChild(btn);
-        });
-      }
-
-      elements.addToPlaylistModal.classList.remove('hidden');
+    // Helper HTML Escaper
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    function renderQueue() {
-      elements.queueList.innerHTML = '';
-      elements.queueCount.textContent = state.queue.length;
-      elements.queueSubtitleCount.textContent = state.queue.length;
+    // Add Video To Queue
+    function addToQueue(video, playImmediately = false) {
+      STATE.queue.push(video);
+      persistState();
+      renderQueueUI();
 
-      if (state.queue.length === 0) {
-        elements.queueList.innerHTML = `
-          <div class="p-8 text-center text-neutral-500 space-y-1">
-            <i class="fa-solid fa-list text-3xl text-neutral-700 mb-2"></i>
-            <p class="text-xs font-semibold">Your queue is empty</p>
-          </div>
-        `;
+      if (playImmediately || STATE.currentVideoIndex === -1) {
+        playQueueIndex(STATE.queue.length - 1);
+      } else {
+        showToast('Added video to queue');
+      }
+    }
+
+    // Generate Shuffled Map Index
+    function regenerateShuffleMap() {
+      const indices = STATE.queue.map((_, i) => i);
+      // Fisher-Yates shuffle
+      for (let i = indices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      STATE.shuffledOrder = indices;
+    }
+
+    // Play specific index in queue
+    function playQueueIndex(index) {
+      if (index < 0 || index >= STATE.queue.length) return;
+
+      STATE.currentVideoIndex = index;
+      const video = STATE.queue[index];
+
+      dom.iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1`;
+      dom.emptyState.classList.add('hidden');
+      
+      dom.videoTitle.textContent = video.title;
+      dom.videoChannel.textContent = video.channel;
+
+      renderQueueUI();
+    }
+
+    // Next Track Logic
+    function playNext() {
+      if (!STATE.queue.length) return;
+
+      if (STATE.isShuffle) {
+        if (!STATE.shuffledOrder.length || STATE.shuffledOrder.length !== STATE.queue.length) {
+          regenerateShuffleMap();
+        }
+        const currentPos = STATE.shuffledOrder.indexOf(STATE.currentVideoIndex);
+        const nextPos = (currentPos + 1) % STATE.shuffledOrder.length;
+        playQueueIndex(STATE.shuffledOrder[nextPos]);
+      } else {
+        const nextIndex = (STATE.currentVideoIndex + 1) % STATE.queue.length;
+        playQueueIndex(nextIndex);
+      }
+    }
+
+    // Previous Track Logic
+    function playPrev() {
+      if (!STATE.queue.length) return;
+
+      if (STATE.isShuffle) {
+        if (!STATE.shuffledOrder.length || STATE.shuffledOrder.length !== STATE.queue.length) {
+          regenerateShuffleMap();
+        }
+        const currentPos = STATE.shuffledOrder.indexOf(STATE.currentVideoIndex);
+        const prevPos = (currentPos - 1 + STATE.shuffledOrder.length) % STATE.shuffledOrder.length;
+        playQueueIndex(STATE.shuffledOrder[prevPos]);
+      } else {
+        const prevIndex = (STATE.currentVideoIndex - 1 + STATE.queue.length) % STATE.queue.length;
+        playQueueIndex(prevIndex);
+      }
+    }
+
+    function renderQueueUI() {
+      dom.queueCount.textContent = STATE.queue.length;
+      dom.queueItemsList.innerHTML = '';
+
+      if (!STATE.queue.length) {
+        dom.queueItemsList.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 text-stone-500 text-xs">
+            <i class="fa-solid fa-layer-group text-2xl mb-2 opacity-40"></i>
+            Queue is empty. Add videos from search or playlists.
+          </div>`;
         return;
       }
 
-      state.queue.forEach((track, idx) => {
+      STATE.queue.forEach((video, index) => {
+        const isCurrent = index === STATE.currentVideoIndex;
         const item = document.createElement('div');
-        const isCurrentlyPlaying = (idx === 0 && state.currentTrack && state.currentTrack.id === track.id);
-
-        item.className = `p-3 rounded-2xl border flex items-center justify-between gap-3 transition-all ${
-          isCurrentlyPlaying 
-            ? 'border-red-500/50 bg-red-500/10 shadow-md' 
-            : 'border-neutral-800 bg-neutral-900/60'
+        item.className = `p-2 rounded-xl border flex items-center justify-between gap-2 transition ${
+          isCurrent 
+            ? 'bg-amber-950/40 border-amber-500/80 shadow-md shadow-amber-500/10' 
+            : 'bg-stone-950/40 border-amber-900/20 hover:bg-stone-800/60'
         }`;
 
-        const safeTitle = track.title.replace(/"/g, '&quot;');
-        const safeChannel = track.channel.replace(/"/g, '&quot;');
-
         item.innerHTML = `
-          <div class="flex items-center gap-3 overflow-hidden cursor-pointer flex-1 queue-item-click">
-            <span class="text-xs font-mono font-bold w-5 text-center ${isCurrentlyPlaying ? 'text-red-400' : 'text-neutral-500'}">
-              ${isCurrentlyPlaying ? '<i class="fa-solid fa-volume-high text-xs animate-pulse"></i>' : (idx + 1)}
+          <div class="flex items-center space-x-2.5 overflow-hidden flex-1 cursor-pointer select-none">
+            <span class="text-[11px] font-semibold w-4 text-center ${isCurrent ? 'text-amber-400' : 'text-stone-500'}">
+              ${isCurrent ? '<i class="fa-solid fa-volume-high animate-pulse"></i>' : index + 1}
             </span>
+            <img src="${video.thumbnail}" class="w-12 h-8 rounded object-cover shrink-0 bg-stone-900">
             <div class="overflow-hidden">
-              <h4 class="font-semibold text-xs truncate ${isCurrentlyPlaying ? 'text-red-400 font-bold' : 'text-neutral-100'}">${safeTitle}</h4>
-              <p class="text-[11px] text-neutral-400 truncate mt-0.5">${safeChannel}</p>
+              <h5 class="text-xs font-medium text-stone-200 truncate ${isCurrent ? 'text-amber-300 font-semibold' : ''}">${escapeHtml(video.title)}</h5>
+              <p class="text-[10px] text-stone-400 truncate">${escapeHtml(video.channel)}</p>
             </div>
           </div>
-          <button class="remove-queue-btn p-2 text-neutral-400 hover:text-red-400 transition-colors" title="Remove from Queue">
+          <button class="remove-queue-item text-stone-500 hover:text-rose-400 px-2 py-1 transition" title="Remove from queue">
             <i class="fa-solid fa-trash-can text-xs"></i>
           </button>
         `;
 
-        item.querySelector('.queue-item-click').addEventListener('click', () => {
-          playTrack(track, false);
+        // Click to play
+        item.querySelector('.flex-1').addEventListener('click', () => {
+          playQueueIndex(index);
         });
 
-        item.querySelector('.remove-queue-btn').addEventListener('click', (e) => {
+        // Click to delete
+        item.querySelector('.remove-queue-item').addEventListener('click', (e) => {
           e.stopPropagation();
-          state.queue.splice(idx, 1);
-          
-          if (isCurrentlyPlaying) {
-            if (state.queue.length > 0) {
-              playTrack(state.queue[0], false);
-            } else {
-              state.currentTrack = null;
-              state.isPlaying = false;
-              elements.mainPlayerFrame.src = '';
-              elements.mainPlayerFrame.classList.add('hidden');
-              elements.emptyScreenMsg.classList.remove('hidden');
-              elements.footerTitle.textContent = 'No Video Selected';
-              elements.footerArtist.textContent = 'Select a video to play';
-              elements.playPauseIcon.className = 'fa-solid fa-play text-sm ml-0.5';
-            }
-          }
-
-          renderQueue();
-          showToast('Removed from queue', 'info');
+          removeFromQueue(index);
         });
 
-        elements.queueList.appendChild(item);
+        dom.queueItemsList.appendChild(item);
       });
     }
 
-    function shuffleQueue() {
-      if (state.queue.length <= 1) {
-        showToast('Add more tracks to shuffle queue', 'info');
+    function removeFromQueue(index) {
+      STATE.queue.splice(index, 1);
+      if (STATE.currentVideoIndex === index) {
+        if (STATE.queue.length > 0) {
+          playQueueIndex(Math.min(index, STATE.queue.length - 1));
+        } else {
+          STATE.currentVideoIndex = -1;
+          dom.iframe.src = '';
+          dom.emptyState.classList.remove('hidden');
+          dom.videoTitle.textContent = 'Select a video to play';
+          dom.videoChannel.textContent = '--';
+        }
+      } else if (STATE.currentVideoIndex > index) {
+        STATE.currentVideoIndex--;
+      }
+      persistState();
+      renderQueueUI();
+    }
+
+    // Render Saved Playlists
+    function renderPlaylistsUI() {
+      dom.savedPlaylistsList.innerHTML = '';
+
+      if (!STATE.playlists.length) {
+        dom.savedPlaylistsList.innerHTML = `
+          <div class="p-6 text-center text-stone-500 text-xs">
+            No saved playlists yet. Click "New List" or save your queue.
+          </div>`;
         return;
       }
 
-      // Shuffle upcoming songs while keeping index 0 (current playing track) at the top
-      const current = state.queue[0];
-      const upcoming = state.queue.slice(1);
+      STATE.playlists.forEach((playlist, pIndex) => {
+        const pCard = document.createElement('div');
+        pCard.className = 'bg-stone-950/40 border border-amber-900/30 hover:border-amber-500/50 rounded-xl p-3 flex flex-col gap-2.5 transition cursor-pointer group';
+        
+        pCard.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex-1 min-w-0 pr-2">
+              <h4 class="text-xs font-bold text-stone-200 group-hover:text-amber-300 transition flex items-center gap-1.5 truncate">
+                <i class="fa-solid fa-folder text-amber-400"></i> ${escapeHtml(playlist.name)}
+              </h4>
+              <p class="text-[10px] text-stone-400 mt-0.5">${playlist.videos.length} videos • Click to edit</p>
+            </div>
+            <div class="flex items-center space-x-1 shrink-0">
+              <button class="load-playlist-btn bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 text-[11px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 shadow">
+                <i class="fa-solid fa-play text-[10px]"></i> Load Queue
+              </button>
+              <button class="edit-playlist-btn text-stone-400 hover:text-amber-300 p-1.5 transition" title="Edit Playlist">
+                <i class="fa-solid fa-pen-to-square text-xs"></i>
+              </button>
+            </div>
+          </div>
+        `;
 
-      for (let i = upcoming.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [upcoming[i], upcoming[j]] = [upcoming[j], upcoming[i]];
-      }
+        // Click Card or Edit Button to open edit modal
+        pCard.addEventListener('click', (e) => {
+          if (!e.target.closest('.load-playlist-btn')) {
+            openEditPlaylistModal(pIndex);
+          }
+        });
 
-      state.queue = [current, ...upcoming];
-      state.currentIndex = 0;
+        // Load Playlist to Queue Action
+        pCard.querySelector('.load-playlist-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (!playlist.videos.length) {
+            showToast('This playlist is empty.', 'error');
+            return;
+          }
+          STATE.queue = [...playlist.videos];
+          persistState();
+          if (STATE.isShuffle) regenerateShuffleMap();
+          renderQueueUI();
+          playQueueIndex(0);
+          showToast(`Loaded "${playlist.name}" into Queue`);
+        });
 
-      renderQueue();
-      showToast('Upcoming queue shuffled!', 'success');
+        dom.savedPlaylistsList.appendChild(pCard);
+      });
     }
 
-    elements.createPlaylistBtn.addEventListener('click', () => {
-      elements.playlistNameInput.value = '';
-      elements.createPlaylistModal.classList.remove('hidden');
-    });
+    // Open & Render Playlist Edit Modal
+    function openEditPlaylistModal(index) {
+      if (index < 0 || index >= STATE.playlists.length) return;
+      STATE.editingPlaylistIndex = index;
+      const playlist = STATE.playlists[index];
 
-    elements.closePlaylistModal.addEventListener('click', () => elements.createPlaylistModal.classList.add('hidden'));
-    elements.closeAddModal.addEventListener('click', () => elements.addToPlaylistModal.classList.add('hidden'));
+      dom.editPlaylistNameInput.value = playlist.name;
+      renderEditPlaylistItemsUI();
+      dom.editPlaylistModal.classList.remove('hidden');
+    }
 
-    elements.savePlaylistBtn.addEventListener('click', () => {
-      const name = elements.playlistNameInput.value.trim();
-      if (!name) return;
+    function renderEditPlaylistItemsUI() {
+      const playlist = STATE.playlists[STATE.editingPlaylistIndex];
+      if (!playlist) return;
 
-      const newPlaylist = {
-        id: 'pl_' + Date.now(),
-        name: name,
-        tracks: []
-      };
+      dom.editPlaylistItemCount.textContent = playlist.videos.length;
+      dom.editPlaylistItemsList.innerHTML = '';
 
-      state.playlists.push(newPlaylist);
-      savePlaylistsToStorage();
-      elements.createPlaylistModal.classList.add('hidden');
-      showToast(`Playlist "${name}" created!`, 'success');
-    });
-
-    elements.backToPlaylistsBtn.addEventListener('click', () => {
-      elements.activePlaylistView.classList.add('hidden');
-      elements.playlistsGrid.classList.remove('hidden');
-    });
-
-    elements.deletePlaylistBtn.addEventListener('click', () => {
-      if (!state.activePlaylistId) return;
-      state.playlists = state.playlists.filter(p => p.id !== state.activePlaylistId);
-      savePlaylistsToStorage();
-      elements.activePlaylistView.classList.add('hidden');
-      elements.playlistsGrid.classList.remove('hidden');
-      showToast('Playlist deleted', 'info');
-    });
-
-    elements.playAllPlaylistBtn.addEventListener('click', () => {
-      const pl = state.playlists.find(p => p.id === state.activePlaylistId);
-      if (!pl || !pl.tracks || pl.tracks.length === 0) return;
-
-      state.queue = [...pl.tracks];
-      state.currentIndex = 0;
-      renderQueue();
-      playTrack(state.queue[0], false);
-    });
-
-    elements.clearQueueBtn.addEventListener('click', () => {
-      state.queue = [];
-      state.currentIndex = -1;
-      renderQueue();
-      showToast('Queue cleared', 'info');
-    });
-
-    // Search Form Listeners
-    elements.searchForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (elements.headerSearchInput.value) performSearch(elements.headerSearchInput.value);
-    });
-
-    elements.mainSearchForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (elements.mainSearchInput.value) performSearch(elements.mainSearchInput.value);
-    });
-
-    // Engine Switcher
-    elements.directBypassBtn.addEventListener('click', () => {
-      if (state.engineMode === 'nocookie') state.engineMode = 'piped';
-      else if (state.engineMode === 'piped') state.engineMode = 'yewtu';
-      else state.engineMode = 'nocookie';
-
-      localStorage.setItem('sp_engine_mode', state.engineMode);
-      elements.engineLabel.textContent = `Engine: ${state.engineMode.toUpperCase()}`;
-      
-      if (state.currentTrack) playTrack(state.currentTrack);
-    });
-
-    elements.shuffleBtn.addEventListener('click', () => {
-      shuffleQueue();
-    });
-
-    document.querySelectorAll('.engine-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.engineMode = btn.dataset.engine;
-        localStorage.setItem('sp_engine_mode', state.engineMode);
-        elements.engineLabel.textContent = `Engine: ${state.engineMode.toUpperCase()}`;
-        elements.engineModal.classList.add('hidden');
-        if (state.currentTrack) playTrack(state.currentTrack);
-      });
-    });
-
-    // Playback Controls
-    elements.playPauseBtn.addEventListener('click', () => {
-      if (!state.currentTrack) return;
-
-      state.isPlaying = !state.isPlaying;
-      if (state.isPlaying) {
-        elements.playPauseIcon.className = 'fa-solid fa-pause text-sm';
-        playTrack(state.currentTrack);
-      } else {
-        elements.playPauseIcon.className = 'fa-solid fa-play text-sm ml-0.5';
-        elements.mainPlayerFrame.src = '';
+      if (!playlist.videos.length) {
+        dom.editPlaylistItemsList.innerHTML = `
+          <div class="p-8 text-center text-stone-500 text-xs">
+            This playlist has no videos yet. Add videos from search results or your queue.
+          </div>`;
+        return;
       }
-    });
 
-    elements.nextBtn.addEventListener('click', () => {
-      playNextTrackInQueue();
-    });
+      playlist.videos.forEach((video, vIndex) => {
+        const item = document.createElement('div');
+        item.className = 'bg-stone-950/60 border border-amber-900/20 rounded-xl p-2 flex items-center justify-between gap-2 text-xs';
+        item.innerHTML = `
+          <div class="flex items-center space-x-2.5 overflow-hidden flex-1">
+            <span class="text-[10px] text-stone-500 font-mono w-4 text-center">${vIndex + 1}</span>
+            <img src="${video.thumbnail}" class="w-10 h-7 rounded object-cover shrink-0 bg-stone-900">
+            <div class="overflow-hidden flex-1">
+              <h5 class="text-xs font-medium text-stone-200 truncate">${escapeHtml(video.title)}</h5>
+              <p class="text-[10px] text-stone-400 truncate">${escapeHtml(video.channel)}</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-1 shrink-0">
+            <button class="move-up-btn text-stone-500 hover:text-amber-400 p-1 transition ${vIndex === 0 ? 'opacity-30 pointer-events-none' : ''}">
+              <i class="fa-solid fa-chevron-up text-xs"></i>
+            </button>
+            <button class="move-down-btn text-stone-500 hover:text-amber-400 p-1 transition ${vIndex === playlist.videos.length - 1 ? 'opacity-30 pointer-events-none' : ''}">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </button>
+            <button class="remove-item-btn text-stone-500 hover:text-rose-400 p-1 transition">
+              <i class="fa-solid fa-trash-can text-xs"></i>
+            </button>
+          </div>
+        `;
 
-    elements.prevBtn.addEventListener('click', () => {
-      if (state.queue.length === 0) return;
-      state.currentIndex = (state.currentIndex - 1 + state.queue.length) % state.queue.length;
-      playTrack(state.queue[state.currentIndex], false);
-    });
+        // Move Up
+        item.querySelector('.move-up-btn')?.addEventListener('click', () => {
+          if (vIndex > 0) {
+            const temp = playlist.videos[vIndex];
+            playlist.videos[vIndex] = playlist.videos[vIndex - 1];
+            playlist.videos[vIndex - 1] = temp;
+            persistState();
+            renderEditPlaylistItemsUI();
+          }
+        });
 
-    // Navigation Tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('text-white', 'bg-neutral-800/80'));
-        btn.classList.add('text-white', 'bg-neutral-800/80');
+        // Move Down
+        item.querySelector('.move-down-btn')?.addEventListener('click', () => {
+          if (vIndex < playlist.videos.length - 1) {
+            const temp = playlist.videos[vIndex];
+            playlist.videos[vIndex] = playlist.videos[vIndex + 1];
+            playlist.videos[vIndex + 1] = temp;
+            persistState();
+            renderEditPlaylistItemsUI();
+          }
+        });
 
-        const tabName = btn.dataset.tab;
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-        document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        // Remove Video from Playlist
+        item.querySelector('.remove-item-btn').addEventListener('click', () => {
+          playlist.videos.splice(vIndex, 1);
+          persistState();
+          renderEditPlaylistItemsUI();
+          renderPlaylistsUI();
+        });
 
-        if (tabName === 'playlists') {
-          renderPlaylists();
+        dom.editPlaylistItemsList.appendChild(item);
+      });
+    }
+
+    function setupEventListeners() {
+      // Search
+      dom.searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        switchTab('search');
+        searchYouTube(dom.searchInput.value);
+      });
+
+      // Tab Switching helper
+      function switchTab(activeTab) {
+        const tabs = {
+          search: { btn: dom.tabSearchBtn, content: dom.searchTabContent },
+          queue: { btn: dom.tabQueueBtn, content: dom.queueTabContent },
+          playlist: { btn: dom.tabPlaylistBtn, content: dom.playlistTabContent }
+        };
+
+        Object.keys(tabs).forEach(tabKey => {
+          if (tabKey === activeTab) {
+            tabs[tabKey].content.classList.remove('hidden');
+            tabs[tabKey].btn.className = 'flex-1 py-3 px-2 text-xs font-semibold text-amber-400 border-b-2 border-amber-400 flex items-center justify-center gap-1.5 transition';
+          } else {
+            tabs[tabKey].content.classList.add('hidden');
+            tabs[tabKey].btn.className = 'flex-1 py-3 px-2 text-xs font-semibold text-stone-400 border-b-2 border-transparent hover:text-amber-200 flex items-center justify-center gap-1.5 transition';
+          }
+        });
+      }
+
+      dom.tabSearchBtn.addEventListener('click', () => switchTab('search'));
+      dom.tabQueueBtn.addEventListener('click', () => switchTab('queue'));
+      dom.tabPlaylistBtn.addEventListener('click', () => switchTab('playlist'));
+
+      dom.nextBtn.addEventListener('click', playNext);
+      dom.prevBtn.addEventListener('click', playPrev);
+
+      // Shuffle Dynamic Toggle
+      dom.shuffleBtn.addEventListener('click', () => {
+        STATE.isShuffle = !STATE.isShuffle;
+        if (STATE.isShuffle) {
+          regenerateShuffleMap();
+          dom.shuffleStatusPill.textContent = 'ON';
+          dom.shuffleStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500 text-stone-950 uppercase tracking-wider';
+          dom.shuffleBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-2 text-amber-400 hover:text-amber-300';
+          showToast('Queue Shuffle Enabled');
+        } else {
+          dom.shuffleStatusPill.textContent = 'OFF';
+          dom.shuffleStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 uppercase tracking-wider';
+          dom.shuffleBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-2 text-stone-400 hover:text-stone-200';
+          showToast('Shuffle Disabled');
         }
       });
+
+      // Clear Queue
+      document.getElementById('clear-queue-btn').addEventListener('click', () => {
+        STATE.queue = [];
+        STATE.currentVideoIndex = -1;
+        dom.iframe.src = '';
+        dom.emptyState.classList.remove('hidden');
+        dom.videoTitle.textContent = 'Select a video to play';
+        dom.videoChannel.textContent = '--';
+        persistState();
+        renderQueueUI();
+        showToast('Queue cleared');
+      });
+
+      // Save Queue as Playlist
+      document.getElementById('save-queue-as-playlist-btn').addEventListener('click', () => {
+        if (!STATE.queue.length) {
+          showToast('Queue is empty!', 'error');
+          return;
+        }
+        const name = prompt('Enter a name for this playlist:', `Gold Queue ${STATE.playlists.length + 1}`);
+        if (name && name.trim()) {
+          STATE.playlists.push({
+            name: name.trim(),
+            videos: [...STATE.queue]
+          });
+          persistState();
+          renderPlaylistsUI();
+          updateTopPlaylistDropdown();
+          showToast('Queue saved as playlist!');
+        }
+      });
+
+      // Add Currently Playing Video to Playlist via standard prompt fallback
+      document.getElementById('add-current-to-playlist-btn').addEventListener('click', () => {
+        if (STATE.currentVideoIndex >= 0 && STATE.queue[STATE.currentVideoIndex]) {
+          const currentVideo = STATE.queue[STATE.currentVideoIndex];
+          if (!STATE.playlists.length) {
+            showToast('No playlists found. Create one first!', 'error');
+            return;
+          }
+          const plNames = STATE.playlists.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
+          const choice = prompt(`Select playlist number to add current video:\n${plNames}`);
+          const index = parseInt(choice, 10) - 1;
+          if (!isNaN(index) && STATE.playlists[index]) {
+            STATE.playlists[index].videos.push(currentVideo);
+            persistState();
+            renderPlaylistsUI();
+            updateTopPlaylistDropdown();
+            showToast(`Added to "${STATE.playlists[index].name}"`);
+          }
+        } else {
+          showToast('No active video playing', 'error');
+        }
+      });
+
+      // Modal Triggers
+      document.getElementById('open-settings-btn').addEventListener('click', () => {
+        dom.apiKeyInput.value = STATE.apiKey;
+        dom.apiModal.classList.remove('hidden');
+      });
+
+      document.getElementById('close-api-modal-btn').addEventListener('click', () => {
+        dom.apiModal.classList.add('hidden');
+      });
+
+      document.getElementById('save-api-key-btn').addEventListener('click', () => {
+        STATE.apiKey = dom.apiKeyInput.value.trim();
+        persistState();
+        updateApiStatusUI();
+        dom.apiModal.classList.add('hidden');
+        showToast('API Key saved!');
+      });
+
+      document.getElementById('clear-api-key-btn').addEventListener('click', () => {
+        STATE.apiKey = '';
+        dom.apiKeyInput.value = '';
+        persistState();
+        updateApiStatusUI();
+        dom.apiModal.classList.add('hidden');
+        showToast('API Key removed');
+      });
+
+      document.getElementById('create-playlist-btn').addEventListener('click', () => {
+        dom.playlistNameInput.value = '';
+        dom.playlistModal.classList.remove('hidden');
+      });
+
+      document.getElementById('close-playlist-modal-btn').addEventListener('click', () => {
+        dom.playlistModal.classList.add('hidden');
+      });
+
+      document.getElementById('save-new-playlist-btn').addEventListener('click', () => {
+        const name = dom.playlistNameInput.value.trim();
+        if (name) {
+          STATE.playlists.push({ name, videos: [] });
+          persistState();
+          renderPlaylistsUI();
+          updateTopPlaylistDropdown();
+          dom.playlistModal.classList.add('hidden');
+          showToast(`Created playlist "${name}"`);
+        }
+      });
+
+      // Edit Playlist Modal Event Handlers
+      dom.editPlaylistNameInput.addEventListener('change', () => {
+        if (STATE.editingPlaylistIndex >= 0 && STATE.playlists[STATE.editingPlaylistIndex]) {
+          const newName = dom.editPlaylistNameInput.value.trim();
+          if (newName) {
+            STATE.playlists[STATE.editingPlaylistIndex].name = newName;
+            persistState();
+            renderPlaylistsUI();
+            updateTopPlaylistDropdown();
+          }
+        }
+      });
+
+      document.getElementById('close-edit-playlist-modal-btn').addEventListener('click', () => {
+        dom.editPlaylistModal.classList.add('hidden');
+      });
+
+      document.getElementById('save-edit-playlist-btn').addEventListener('click', () => {
+        if (STATE.editingPlaylistIndex >= 0 && STATE.playlists[STATE.editingPlaylistIndex]) {
+          const newName = dom.editPlaylistNameInput.value.trim();
+          if (newName) {
+            STATE.playlists[STATE.editingPlaylistIndex].name = newName;
+          }
+          persistState();
+          renderPlaylistsUI();
+          updateTopPlaylistDropdown();
+        }
+        dom.editPlaylistModal.classList.add('hidden');
+        showToast('Playlist updated');
+      });
+
+      document.getElementById('delete-editing-playlist-btn').addEventListener('click', () => {
+        if (STATE.editingPlaylistIndex >= 0 && STATE.playlists[STATE.editingPlaylistIndex]) {
+          const name = STATE.playlists[STATE.editingPlaylistIndex].name;
+          STATE.playlists.splice(STATE.editingPlaylistIndex, 1);
+          STATE.editingPlaylistIndex = -1;
+          persistState();
+          renderPlaylistsUI();
+          updateTopPlaylistDropdown();
+          dom.editPlaylistModal.classList.add('hidden');
+          showToast(`Deleted playlist "${name}"`);
+        }
+      });
+    }
+
+    // App Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      updateApiStatusUI();
+      renderQueueUI();
+      renderPlaylistsUI();
+      updateTopPlaylistDropdown();
+      setupEventListeners();
     });
-
-    // Modal Triggers
-    elements.networkEngineBtn.addEventListener('click', () => elements.engineModal.classList.remove('hidden'));
-    elements.closeEngineModal.addEventListener('click', () => elements.engineModal.classList.add('hidden'));
-
-    elements.settingsBtn.addEventListener('click', () => {
-      elements.apiKeyInput.value = state.apiKey;
-      elements.apiModal.classList.remove('hidden');
-    });
-    elements.closeApiModal.addEventListener('click', () => elements.apiModal.classList.add('hidden'));
-
-    elements.saveApiKeyBtn.addEventListener('click', () => {
-      state.apiKey = elements.apiKeyInput.value.trim();
-      localStorage.setItem('sp_yt_api_key', state.apiKey);
-      elements.apiModal.classList.add('hidden');
-      showToast('API Key saved!', 'success');
-    });
-
-    window.onload = function() {
-      if (state.apiKey) {
-        elements.apiKeyInput.value = state.apiKey;
-      }
-      elements.engineLabel.textContent = `Engine: ${state.engineMode.toUpperCase()}`;
-      renderSearchResults(defaultTracks);
-      renderPlaylists();
-      renderQueue();
-    };
   </script>
 </body>
 </html>
