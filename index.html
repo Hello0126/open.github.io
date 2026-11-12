@@ -49,8 +49,8 @@
       <form id="search-form" class="relative flex items-center">
         <input 
           type="text" 
-          id="search-input"
-          placeholder="Search YouTube videos..." 
+          id="search-input" 
+          placeholder="Search YouTube videos or paste URL..." 
           class="w-full bg-stone-900/90 border border-amber-900/50 rounded-full py-2 pl-4 pr-12 text-sm text-stone-200 placeholder-stone-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition"
         >
         <button type="submit" class="absolute right-1 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 rounded-full text-xs font-semibold transition shadow-md shadow-amber-500/20">
@@ -62,7 +62,7 @@
     <!-- Right Controls: Config API Key Button -->
     <div class="flex items-center space-x-2">
       <button 
-        id="open-settings-btn"
+        id="open-settings-btn" 
         class="flex items-center space-x-2 bg-stone-900 hover:bg-stone-800 border border-amber-900/60 text-amber-300 px-3.5 py-1.5 rounded-xl text-xs font-medium transition"
       >
         <i class="fa-solid fa-key text-yellow-400"></i>
@@ -79,12 +79,8 @@
       
       <!-- Embed Video Player Container -->
       <div class="w-full bg-stone-900 rounded-2xl overflow-hidden border border-amber-900/40 shadow-2xl shadow-amber-950/20 aspect-video relative flex items-center justify-center group">
-        <iframe 
-          id="youtube-iframe" 
-          class="w-full h-full border-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-          allowfullscreen>
-        </iframe>
+        <!-- YouTube IFrame API Target -->
+        <div id="youtube-player" class="w-full h-full"></div>
         
         <!-- Empty State Overlay when no video -->
         <div id="player-empty-state" class="absolute inset-0 bg-stone-950/95 flex flex-col items-center justify-center p-6 text-center z-10">
@@ -127,13 +123,24 @@
             </button>
           </div>
 
-          <!-- Shuffle Dynamic Controller -->
-          <div class="flex items-center bg-stone-950/80 p-1 rounded-xl border border-amber-900/50 space-x-2">
-            <button id="shuffle-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-2 text-stone-400 hover:text-amber-300">
-              <i class="fa-solid fa-shuffle text-sm"></i>
-              <span>Shuffle Queue</span>
-            </button>
-            <span id="shuffle-status-pill" class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 uppercase tracking-wider">OFF</span>
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Auto-Next Toggle Controller -->
+            <div class="flex items-center bg-stone-950/80 p-1 rounded-xl border border-amber-900/50 space-x-1.5">
+              <button id="autonext-toggle-btn" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 text-amber-300">
+                <i class="fa-solid fa-forward text-xs"></i>
+                <span>Auto-Next</span>
+              </button>
+              <span id="autonext-status-pill" class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 uppercase tracking-wider">ON</span>
+            </div>
+
+            <!-- Shuffle Dynamic Controller -->
+            <div class="flex items-center bg-stone-950/80 p-1 rounded-xl border border-amber-900/50 space-x-1.5">
+              <button id="shuffle-toggle-btn" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5 text-stone-400 hover:text-amber-300">
+                <i class="fa-solid fa-shuffle text-xs"></i>
+                <span>Shuffle</span>
+              </button>
+              <span id="shuffle-status-pill" class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 uppercase tracking-wider">OFF</span>
+            </div>
           </div>
         </div>
       </div>
@@ -279,6 +286,23 @@
     </div>
   </div>
 
+  <!-- Quick Save Video to Playlist Modal -->
+  <div id="quick-save-modal" class="hidden fixed inset-0 bg-stone-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-stone-900 border border-amber-900/60 rounded-2xl max-w-sm w-full p-6 shadow-2xl shadow-amber-950/40">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base font-bold text-amber-200 flex items-center gap-2">
+          <i class="fa-solid fa-bookmark text-yellow-400"></i> Save Video to Playlist
+        </h3>
+        <button id="close-quick-save-modal-btn" class="text-stone-400 hover:text-stone-200">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div id="quick-save-playlists-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Playlist Drawer / Modal -->
   <div id="edit-playlist-modal" class="hidden fixed inset-0 bg-stone-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-stone-900 border border-amber-900/60 rounded-2xl max-w-lg w-full max-h-[85vh] flex flex-col p-6 shadow-2xl shadow-amber-950/40">
@@ -299,7 +323,7 @@
       <!-- Playlist Items Manager List -->
       <div class="flex items-center justify-between mb-2">
         <span class="text-xs font-semibold text-stone-400">Videos (<span id="edit-playlist-item-count">0</span>)</span>
-        <span class="text-[11px] text-stone-500">Click icon to remove or reorder</span>
+        <span class="text-[11px] text-stone-500">Reorder or remove items</span>
       </div>
 
       <div id="edit-playlist-items-list" class="flex-1 overflow-y-auto space-y-2 pr-1 my-2 min-h-[200px]">
@@ -320,6 +344,9 @@
   <!-- Notification Toast Container -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
 
+  <!-- YouTube IFrame Player API Script -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+
   <!-- JAVASCRIPT APP LOGIC -->
   <script>
     // --- Application State Management ---
@@ -329,13 +356,16 @@
       playlists: JSON.parse(localStorage.getItem('clean_tube_playlists') || '[]'),
       currentVideoIndex: -1,
       isShuffle: false,
-      shuffledOrder: [], // Mapping of original queue indices when shuffled
-      editingPlaylistIndex: -1 // Index of playlist currently being edited
+      isAutoNext: true, // Enabled by default so next video in queue plays automatically
+      shuffledOrder: [],
+      editingPlaylistIndex: -1,
+      ytPlayer: null,
+      ytApiReady: false,
+      pendingVideoId: null
     };
 
     // DOM References
     const dom = {
-      iframe: document.getElementById('youtube-iframe'),
       emptyState: document.getElementById('player-empty-state'),
       videoTitle: document.getElementById('current-video-title'),
       videoChannel: document.getElementById('current-video-channel'),
@@ -347,6 +377,8 @@
       queueItemsList: document.getElementById('queue-items-list'),
       savedPlaylistsList: document.getElementById('saved-playlists-list'),
       queueCount: document.getElementById('queue-count'),
+      autoNextBtn: document.getElementById('autonext-toggle-btn'),
+      autoNextStatusPill: document.getElementById('autonext-status-pill'),
       shuffleBtn: document.getElementById('shuffle-toggle-btn'),
       shuffleStatusPill: document.getElementById('shuffle-status-pill'),
       prevBtn: document.getElementById('prev-btn'),
@@ -356,6 +388,8 @@
       apiStatusBadge: document.getElementById('api-status-badge'),
       playlistModal: document.getElementById('playlist-modal'),
       playlistNameInput: document.getElementById('playlist-name-input'),
+      quickSaveModal: document.getElementById('quick-save-modal'),
+      quickSavePlaylistsList: document.getElementById('quick-save-playlists-list'),
       editPlaylistModal: document.getElementById('edit-playlist-modal'),
       editPlaylistNameInput: document.getElementById('edit-playlist-name-input'),
       editPlaylistItemCount: document.getElementById('edit-playlist-item-count'),
@@ -368,6 +402,68 @@
       playlistTabContent: document.getElementById('playlist-tab-content'),
       toastContainer: document.getElementById('toast-container')
     };
+
+    // --- YouTube IFrame API Integration ---
+    window.onYouTubeIframeAPIReady = function() {
+      STATE.ytApiReady = true;
+      if (STATE.pendingVideoId) {
+        initOrLoadYTPlayer(STATE.pendingVideoId);
+        STATE.pendingVideoId = null;
+      }
+    };
+
+    function initOrLoadYTPlayer(videoId) {
+      if (!STATE.ytApiReady) {
+        STATE.pendingVideoId = videoId;
+        return;
+      }
+
+      if (!STATE.ytPlayer) {
+        STATE.ytPlayer = new YT.Player('youtube-player', {
+          host: 'https://www.youtube-nocookie.com',
+          height: '100%',
+          width: '100%',
+          videoId: videoId,
+          playerVars: {
+            autoplay: 1,
+            rel: 0,
+            modestbranding: 1,
+            playsinline: 1
+          },
+          events: {
+            onReady: (event) => {
+              event.target.playVideo();
+            },
+            onStateChange: onPlayerStateChange,
+            onError: onPlayerError
+          }
+        });
+      } else if (typeof STATE.ytPlayer.loadVideoById === 'function') {
+        STATE.ytPlayer.loadVideoById(videoId);
+      }
+    }
+
+    // Automatically advance to next video when current video finishes
+    function onPlayerStateChange(event) {
+      // YT.PlayerState.ENDED === 0
+      if (event.data === YT.PlayerState.ENDED && STATE.isAutoNext) {
+        if (STATE.queue.length > 1) {
+          playNext(true); // Pass flag indicating automatic advance
+        } else if (STATE.queue.length === 1) {
+          // Replay single item if auto-next is active or stop cleanly
+          showToast('Reached end of queue');
+        }
+      }
+    }
+
+    // Skip automatically if a video is restricted/unavailable so queue doesn't stall
+    function onPlayerError(event) {
+      console.warn('YouTube Player Error code:', event.data);
+      showToast('Video unavailable or restricted. Skipping...', 'error');
+      if (STATE.isAutoNext && STATE.queue.length > 1) {
+        setTimeout(() => playNext(true), 1500);
+      }
+    }
 
     // Save App State to LocalStorage
     function persistState() {
@@ -382,7 +478,7 @@
       const bg = type === 'error' ? 'bg-rose-700' : type === 'success' ? 'bg-emerald-600' : 'bg-gradient-to-r from-amber-500 to-yellow-500 text-stone-950 font-medium';
       const textColor = type === 'info' ? 'text-stone-950' : 'text-white';
       toast.className = `${bg} ${textColor} text-xs px-4 py-2.5 rounded-xl shadow-xl shadow-amber-950/20 flex items-center space-x-2 transition-all duration-300 opacity-0 transform translate-y-2`;
-      toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> <span>${message}</span>`;
+      toast.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> <span>${escapeHtml(message)}</span>`;
       dom.toastContainer.appendChild(toast);
       
       requestAnimationFrame(() => {
@@ -421,7 +517,6 @@
 
       const directVideoId = parseYouTubeVideoId(query);
       if (directVideoId) {
-        // Direct link provided
         const directVideo = {
           id: directVideoId,
           title: `YouTube Video (${directVideoId})`,
@@ -429,6 +524,7 @@
           thumbnail: `https://i.ytimg.com/vi/${directVideoId}/hqdefault.jpg`
         };
         renderSearchResults([directVideo]);
+        dom.resultsCount.textContent = '1 direct link found';
         return;
       }
 
@@ -450,8 +546,8 @@
 
         const items = data.items.map(item => ({
           id: item.id.videoId,
-          title: item.snippet.title,
-          channel: item.snippet.channelTitle,
+          title: decodeHtmlEntities(item.snippet.title),
+          channel: decodeHtmlEntities(item.snippet.channelTitle),
           thumbnail: item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default?.url
         }));
 
@@ -462,6 +558,12 @@
         showToast(err.message, 'error');
         dom.resultsCount.textContent = 'Error fetching results';
       }
+    }
+
+    function decodeHtmlEntities(str) {
+      const txt = document.createElement('textarea');
+      txt.innerHTML = str;
+      return txt.value;
     }
 
     function updateTopPlaylistDropdown() {
@@ -479,7 +581,7 @@
       }
     }
 
-    // Render Search Results with updated simplified action buttons
+    // Render Search Results
     function renderSearchResults(videos) {
       dom.searchResultsList.innerHTML = '';
       if (!videos.length) {
@@ -508,12 +610,10 @@
           </div>
         `;
 
-        // Event Bindings
         card.querySelector('.play-now-btn').addEventListener('click', () => {
           addToQueue(video, true);
         });
 
-        // Add to the globally selected top playlist or queue
         card.querySelector('.add-selected-btn').addEventListener('click', () => {
           const selectedTarget = dom.topPlaylistSelect.value;
           if (selectedTarget === 'queue') {
@@ -535,12 +635,15 @@
 
     // Helper HTML Escaper
     function escapeHtml(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
     // Add Video To Queue
     function addToQueue(video, playImmediately = false) {
       STATE.queue.push(video);
+      if (STATE.isShuffle) {
+        regenerateShuffleMap();
+      }
       persistState();
       renderQueueUI();
 
@@ -554,7 +657,6 @@
     // Generate Shuffled Map Index
     function regenerateShuffleMap() {
       const indices = STATE.queue.map((_, i) => i);
-      // Fisher-Yates shuffle
       for (let i = indices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [indices[i], indices[j]] = [indices[j], indices[i]];
@@ -569,18 +671,19 @@
       STATE.currentVideoIndex = index;
       const video = STATE.queue[index];
 
-      dom.iframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&enablejsapi=1&rel=0&modestbranding=1`;
       dom.emptyState.classList.add('hidden');
-      
       dom.videoTitle.textContent = video.title;
       dom.videoChannel.textContent = video.channel;
 
+      initOrLoadYTPlayer(video.id);
       renderQueueUI();
     }
 
     // Next Track Logic
-    function playNext() {
+    function playNext(isAuto = false) {
       if (!STATE.queue.length) return;
+
+      let nextIndex = 0;
 
       if (STATE.isShuffle) {
         if (!STATE.shuffledOrder.length || STATE.shuffledOrder.length !== STATE.queue.length) {
@@ -588,10 +691,14 @@
         }
         const currentPos = STATE.shuffledOrder.indexOf(STATE.currentVideoIndex);
         const nextPos = (currentPos + 1) % STATE.shuffledOrder.length;
-        playQueueIndex(STATE.shuffledOrder[nextPos]);
+        nextIndex = STATE.shuffledOrder[nextPos];
       } else {
-        const nextIndex = (STATE.currentVideoIndex + 1) % STATE.queue.length;
-        playQueueIndex(nextIndex);
+        nextIndex = (STATE.currentVideoIndex + 1) % STATE.queue.length;
+      }
+
+      playQueueIndex(nextIndex);
+      if (isAuto) {
+        showToast(`Up Next: ${STATE.queue[nextIndex].title}`);
       }
     }
 
@@ -658,105 +765,121 @@
         // Click to delete
         item.querySelector('.remove-queue-item').addEventListener('click', (e) => {
           e.stopPropagation();
-          removeFromQueue(index);
+          STATE.queue.splice(index, 1);
+
+          if (STATE.queue.length === 0) {
+            STATE.currentVideoIndex = -1;
+            if (STATE.ytPlayer && typeof STATE.ytPlayer.stopVideo === 'function') {
+              STATE.ytPlayer.stopVideo();
+            }
+            dom.emptyState.classList.remove('hidden');
+            dom.videoTitle.textContent = 'Select a video to play';
+            dom.videoChannel.textContent = '--';
+          } else if (index === STATE.currentVideoIndex) {
+            const nextIdx = Math.min(index, STATE.queue.length - 1);
+            playQueueIndex(nextIdx);
+          } else if (index < STATE.currentVideoIndex) {
+            STATE.currentVideoIndex--;
+          }
+
+          if (STATE.isShuffle) regenerateShuffleMap();
+          persistState();
+          renderQueueUI();
         });
 
         dom.queueItemsList.appendChild(item);
       });
     }
 
-    function removeFromQueue(index) {
-      STATE.queue.splice(index, 1);
-      if (STATE.currentVideoIndex === index) {
-        if (STATE.queue.length > 0) {
-          playQueueIndex(Math.min(index, STATE.queue.length - 1));
-        } else {
-          STATE.currentVideoIndex = -1;
-          dom.iframe.src = '';
-          dom.emptyState.classList.remove('hidden');
-          dom.videoTitle.textContent = 'Select a video to play';
-          dom.videoChannel.textContent = '--';
-        }
-      } else if (STATE.currentVideoIndex > index) {
-        STATE.currentVideoIndex--;
-      }
-      persistState();
-      renderQueueUI();
-    }
-
-    // Render Saved Playlists
+    // --- Playlists Management ---
     function renderPlaylistsUI() {
+      updateTopPlaylistDropdown();
       dom.savedPlaylistsList.innerHTML = '';
 
       if (!STATE.playlists.length) {
         dom.savedPlaylistsList.innerHTML = `
-          <div class="p-6 text-center text-stone-500 text-xs">
-            No saved playlists yet. Click "New List" or save your queue.
+          <div class="h-full flex flex-col items-center justify-center text-center p-6 text-stone-500 text-xs">
+            <i class="fa-solid fa-folder-open text-2xl mb-2 opacity-40"></i>
+            No playlists yet. Click "New List" to create one.
           </div>`;
         return;
       }
 
-      STATE.playlists.forEach((playlist, pIndex) => {
-        const pCard = document.createElement('div');
-        pCard.className = 'bg-stone-950/40 border border-amber-900/30 hover:border-amber-500/50 rounded-xl p-3 flex flex-col gap-2.5 transition cursor-pointer group';
-        
-        pCard.innerHTML = `
+      STATE.playlists.forEach((playlist, index) => {
+        const card = document.createElement('div');
+        card.className = 'bg-stone-950/60 border border-amber-900/30 rounded-xl p-3 flex flex-col gap-2.5 hover:border-amber-700/50 transition';
+        card.innerHTML = `
           <div class="flex items-center justify-between">
-            <div class="flex-1 min-w-0 pr-2">
-              <h4 class="text-xs font-bold text-stone-200 group-hover:text-amber-300 transition flex items-center gap-1.5 truncate">
-                <i class="fa-solid fa-folder text-amber-400"></i> ${escapeHtml(playlist.name)}
-              </h4>
-              <p class="text-[10px] text-stone-400 mt-0.5">${playlist.videos.length} videos • Click to edit</p>
+            <div>
+              <h4 class="text-xs font-bold text-amber-200">${escapeHtml(playlist.name)}</h4>
+              <p class="text-[11px] text-stone-400">${playlist.videos.length} video${playlist.videos.length === 1 ? '' : 's'}</p>
             </div>
-            <div class="flex items-center space-x-1 shrink-0">
-              <button class="load-playlist-btn bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 text-[11px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 shadow">
-                <i class="fa-solid fa-play text-[10px]"></i> Load Queue
+            <div class="flex items-center gap-1.5">
+              <button class="play-playlist-btn px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-stone-950 rounded-lg text-[11px] font-bold transition flex items-center gap-1 shadow">
+                <i class="fa-solid fa-play"></i> Play
               </button>
-              <button class="edit-playlist-btn text-stone-400 hover:text-amber-300 p-1.5 transition" title="Edit Playlist">
-                <i class="fa-solid fa-pen-to-square text-xs"></i>
+              <button class="append-playlist-btn px-2 py-1.5 bg-stone-800 hover:bg-stone-700 text-amber-300 rounded-lg text-[11px] font-medium transition border border-amber-900/40" title="Add to Queue">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+              <button class="edit-playlist-btn px-2 py-1.5 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg text-[11px] transition border border-amber-900/40" title="Edit Playlist">
+                <i class="fa-solid fa-pen"></i>
               </button>
             </div>
           </div>
         `;
 
-        // Click Card or Edit Button to open edit modal
-        pCard.addEventListener('click', (e) => {
-          if (!e.target.closest('.load-playlist-btn')) {
-            openEditPlaylistModal(pIndex);
-          }
-        });
-
-        // Load Playlist to Queue Action
-        pCard.querySelector('.load-playlist-btn').addEventListener('click', (e) => {
-          e.stopPropagation();
+        // Replace queue & start playing playlist
+        card.querySelector('.play-playlist-btn').addEventListener('click', () => {
           if (!playlist.videos.length) {
             showToast('This playlist is empty.', 'error');
             return;
           }
           STATE.queue = [...playlist.videos];
-          persistState();
           if (STATE.isShuffle) regenerateShuffleMap();
-          renderQueueUI();
-          playQueueIndex(0);
-          showToast(`Loaded "${playlist.name}" into Queue`);
+          persistState();
+          const startIndex = STATE.isShuffle ? STATE.shuffledOrder[0] : 0;
+          playQueueIndex(startIndex);
+          switchTab('queue');
+          showToast(`Playing "${playlist.name}"`);
         });
 
-        dom.savedPlaylistsList.appendChild(pCard);
+        // Append playlist to current queue
+        card.querySelector('.append-playlist-btn').addEventListener('click', () => {
+          if (!playlist.videos.length) {
+            showToast('This playlist is empty.', 'error');
+            return;
+          }
+          const wasEmpty = STATE.queue.length === 0;
+          STATE.queue.push(...playlist.videos);
+          if (STATE.isShuffle) regenerateShuffleMap();
+          persistState();
+          renderQueueUI();
+          if (wasEmpty) {
+            playQueueIndex(0);
+          }
+          showToast(`Added ${playlist.videos.length} videos to queue`);
+        });
+
+        // Open Edit Modal
+        card.querySelector('.edit-playlist-btn').addEventListener('click', () => {
+          openEditPlaylistModal(index);
+        });
+
+        dom.savedPlaylistsList.appendChild(card);
       });
     }
 
-    // Open & Render Playlist Edit Modal
     function openEditPlaylistModal(index) {
-      if (index < 0 || index >= STATE.playlists.length) return;
       STATE.editingPlaylistIndex = index;
       const playlist = STATE.playlists[index];
+      if (!playlist) return;
 
       dom.editPlaylistNameInput.value = playlist.name;
-      renderEditPlaylistItemsUI();
+      renderEditPlaylistItems();
       dom.editPlaylistModal.classList.remove('hidden');
     }
 
-    function renderEditPlaylistItemsUI() {
+    function renderEditPlaylistItems() {
       const playlist = STATE.playlists[STATE.editingPlaylistIndex];
       if (!playlist) return;
 
@@ -764,279 +887,280 @@
       dom.editPlaylistItemsList.innerHTML = '';
 
       if (!playlist.videos.length) {
-        dom.editPlaylistItemsList.innerHTML = `
-          <div class="p-8 text-center text-stone-500 text-xs">
-            This playlist has no videos yet. Add videos from search results or your queue.
-          </div>`;
+        dom.editPlaylistItemsList.innerHTML = `<div class="text-center text-stone-500 text-xs py-8">No videos in this playlist yet.</div>`;
         return;
       }
 
-      playlist.videos.forEach((video, vIndex) => {
-        const item = document.createElement('div');
-        item.className = 'bg-stone-950/60 border border-amber-900/20 rounded-xl p-2 flex items-center justify-between gap-2 text-xs';
-        item.innerHTML = `
-          <div class="flex items-center space-x-2.5 overflow-hidden flex-1">
-            <span class="text-[10px] text-stone-500 font-mono w-4 text-center">${vIndex + 1}</span>
-            <img src="${video.thumbnail}" class="w-10 h-7 rounded object-cover shrink-0 bg-stone-900">
-            <div class="overflow-hidden flex-1">
-              <h5 class="text-xs font-medium text-stone-200 truncate">${escapeHtml(video.title)}</h5>
+      playlist.videos.forEach((video, vIdx) => {
+        const row = document.createElement('div');
+        row.className = 'bg-stone-950/60 border border-amber-900/30 rounded-xl p-2 flex items-center justify-between gap-2';
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5 overflow-hidden flex-1">
+            <img src="${video.thumbnail}" class="w-10 h-7 rounded object-cover shrink-0">
+            <div class="overflow-hidden">
+              <p class="text-xs font-medium text-stone-200 truncate">${escapeHtml(video.title)}</p>
               <p class="text-[10px] text-stone-400 truncate">${escapeHtml(video.channel)}</p>
             </div>
           </div>
-          <div class="flex items-center space-x-1 shrink-0">
-            <button class="move-up-btn text-stone-500 hover:text-amber-400 p-1 transition ${vIndex === 0 ? 'opacity-30 pointer-events-none' : ''}">
-              <i class="fa-solid fa-chevron-up text-xs"></i>
+          <div class="flex items-center gap-1 shrink-0">
+            <button class="move-up-btn p-1.5 text-stone-400 hover:text-amber-300 disabled:opacity-30" ${vIdx === 0 ? 'disabled' : ''} title="Move Up">
+              <i class="fa-solid fa-arrow-up text-xs"></i>
             </button>
-            <button class="move-down-btn text-stone-500 hover:text-amber-400 p-1 transition ${vIndex === playlist.videos.length - 1 ? 'opacity-30 pointer-events-none' : ''}">
-              <i class="fa-solid fa-chevron-down text-xs"></i>
+            <button class="move-down-btn p-1.5 text-stone-400 hover:text-amber-300 disabled:opacity-30" ${vIdx === playlist.videos.length - 1 ? 'disabled' : ''} title="Move Down">
+              <i class="fa-solid fa-arrow-down text-xs"></i>
             </button>
-            <button class="remove-item-btn text-stone-500 hover:text-rose-400 p-1 transition">
+            <button class="remove-pl-video-btn p-1.5 text-stone-400 hover:text-rose-400" title="Remove">
               <i class="fa-solid fa-trash-can text-xs"></i>
             </button>
           </div>
         `;
 
-        // Move Up
-        item.querySelector('.move-up-btn')?.addEventListener('click', () => {
-          if (vIndex > 0) {
-            const temp = playlist.videos[vIndex];
-            playlist.videos[vIndex] = playlist.videos[vIndex - 1];
-            playlist.videos[vIndex - 1] = temp;
+        row.querySelector('.move-up-btn').addEventListener('click', () => {
+          if (vIdx > 0) {
+            [playlist.videos[vIdx - 1], playlist.videos[vIdx]] = [playlist.videos[vIdx], playlist.videos[vIdx - 1]];
             persistState();
-            renderEditPlaylistItemsUI();
+            renderEditPlaylistItems();
           }
         });
 
-        // Move Down
-        item.querySelector('.move-down-btn')?.addEventListener('click', () => {
-          if (vIndex < playlist.videos.length - 1) {
-            const temp = playlist.videos[vIndex];
-            playlist.videos[vIndex] = playlist.videos[vIndex + 1];
-            playlist.videos[vIndex + 1] = temp;
+        row.querySelector('.move-down-btn').addEventListener('click', () => {
+          if (vIdx < playlist.videos.length - 1) {
+            [playlist.videos[vIdx + 1], playlist.videos[vIdx]] = [playlist.videos[vIdx], playlist.videos[vIdx + 1]];
             persistState();
-            renderEditPlaylistItemsUI();
+            renderEditPlaylistItems();
           }
         });
 
-        // Remove Video from Playlist
-        item.querySelector('.remove-item-btn').addEventListener('click', () => {
-          playlist.videos.splice(vIndex, 1);
+        row.querySelector('.remove-pl-video-btn').addEventListener('click', () => {
+          playlist.videos.splice(vIdx, 1);
           persistState();
-          renderEditPlaylistItemsUI();
+          renderEditPlaylistItems();
           renderPlaylistsUI();
         });
 
-        dom.editPlaylistItemsList.appendChild(item);
+        dom.editPlaylistItemsList.appendChild(row);
       });
     }
 
-    function setupEventListeners() {
-      // Search
-      dom.searchForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        switchTab('search');
-        searchYouTube(dom.searchInput.value);
+    // --- Tab Switching ---
+    function switchTab(tab) {
+      const tabs = {
+        search: { btn: dom.tabSearchBtn, content: dom.searchTabContent },
+        queue: { btn: dom.tabQueueBtn, content: dom.queueTabContent },
+        playlist: { btn: dom.tabPlaylistBtn, content: dom.playlistTabContent }
+      };
+
+      Object.entries(tabs).forEach(([key, item]) => {
+        if (key === tab) {
+          item.btn.classList.add('text-amber-400', 'border-amber-400');
+          item.btn.classList.remove('text-stone-400', 'border-transparent');
+          item.content.classList.remove('hidden');
+        } else {
+          item.btn.classList.remove('text-amber-400', 'border-amber-400');
+          item.btn.classList.add('text-stone-400', 'border-transparent');
+          item.content.classList.add('hidden');
+        }
       });
+    }
 
-      // Tab Switching helper
-      function switchTab(activeTab) {
-        const tabs = {
-          search: { btn: dom.tabSearchBtn, content: dom.searchTabContent },
-          queue: { btn: dom.tabQueueBtn, content: dom.queueTabContent },
-          playlist: { btn: dom.tabPlaylistBtn, content: dom.playlistTabContent }
-        };
+    // --- Event Listeners ---
+    dom.searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      switchTab('search');
+      searchYouTube(dom.searchInput.value);
+    });
 
-        Object.keys(tabs).forEach(tabKey => {
-          if (tabKey === activeTab) {
-            tabs[tabKey].content.classList.remove('hidden');
-            tabs[tabKey].btn.className = 'flex-1 py-3 px-2 text-xs font-semibold text-amber-400 border-b-2 border-amber-400 flex items-center justify-center gap-1.5 transition';
-          } else {
-            tabs[tabKey].content.classList.add('hidden');
-            tabs[tabKey].btn.className = 'flex-1 py-3 px-2 text-xs font-semibold text-stone-400 border-b-2 border-transparent hover:text-amber-200 flex items-center justify-center gap-1.5 transition';
-          }
-        });
+    dom.tabSearchBtn.addEventListener('click', () => switchTab('search'));
+    dom.tabQueueBtn.addEventListener('click', () => switchTab('queue'));
+    dom.tabPlaylistBtn.addEventListener('click', () => switchTab('playlist'));
+
+    dom.prevBtn.addEventListener('click', playPrev);
+    dom.nextBtn.addEventListener('click', () => playNext(false));
+
+    // Toggle Auto-Next
+    dom.autoNextBtn.addEventListener('click', () => {
+      STATE.isAutoNext = !STATE.isAutoNext;
+      if (STATE.isAutoNext) {
+        dom.autoNextBtn.classList.add('text-amber-300');
+        dom.autoNextBtn.classList.remove('text-stone-400');
+        dom.autoNextStatusPill.textContent = 'ON';
+        dom.autoNextStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 uppercase tracking-wider';
+        showToast('Auto-Next enabled');
+      } else {
+        dom.autoNextBtn.classList.remove('text-amber-300');
+        dom.autoNextBtn.classList.add('text-stone-400');
+        dom.autoNextStatusPill.textContent = 'OFF';
+        dom.autoNextStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 uppercase tracking-wider';
+        showToast('Auto-Next disabled');
+      }
+    });
+
+    // Toggle Shuffle
+    dom.shuffleBtn.addEventListener('click', () => {
+      STATE.isShuffle = !STATE.isShuffle;
+      if (STATE.isShuffle) {
+        regenerateShuffleMap();
+        dom.shuffleBtn.classList.add('text-amber-300');
+        dom.shuffleBtn.classList.remove('text-stone-400');
+        dom.shuffleStatusPill.textContent = 'ON';
+        dom.shuffleStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 uppercase tracking-wider';
+        showToast('Shuffle enabled');
+      } else {
+        dom.shuffleBtn.classList.remove('text-amber-300');
+        dom.shuffleBtn.classList.add('text-stone-400');
+        dom.shuffleStatusPill.textContent = 'OFF';
+        dom.shuffleStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 uppercase tracking-wider';
+        showToast('Shuffle disabled');
+      }
+    });
+
+    // Clear Queue
+    document.getElementById('clear-queue-btn').addEventListener('click', () => {
+      STATE.queue = [];
+      STATE.currentVideoIndex = -1;
+      STATE.shuffledOrder = [];
+      if (STATE.ytPlayer && typeof STATE.ytPlayer.stopVideo === 'function') {
+        STATE.ytPlayer.stopVideo();
+      }
+      dom.emptyState.classList.remove('hidden');
+      dom.videoTitle.textContent = 'Select a video to play';
+      dom.videoChannel.textContent = '--';
+      persistState();
+      renderQueueUI();
+      showToast('Queue cleared');
+    });
+
+    // Save Queue as Playlist
+    document.getElementById('save-queue-as-playlist-btn').addEventListener('click', () => {
+      if (!STATE.queue.length) {
+        showToast('Queue is empty.', 'error');
+        return;
+      }
+      const name = `Queue Mix (${new Date().toLocaleDateString()})`;
+      STATE.playlists.push({ name, videos: [...STATE.queue] });
+      persistState();
+      renderPlaylistsUI();
+      showToast(`Saved queue as "${name}"`, 'success');
+    });
+
+    // Save Current Playing Video to Playlist
+    document.getElementById('add-current-to-playlist-btn').addEventListener('click', () => {
+      if (STATE.currentVideoIndex === -1 || !STATE.queue[STATE.currentVideoIndex]) {
+        showToast('No video is currently playing.', 'error');
+        return;
+      }
+      if (!STATE.playlists.length) {
+        showToast('Create a playlist first in the Playlists tab.', 'error');
+        switchTab('playlist');
+        return;
       }
 
-      dom.tabSearchBtn.addEventListener('click', () => switchTab('search'));
-      dom.tabQueueBtn.addEventListener('click', () => switchTab('queue'));
-      dom.tabPlaylistBtn.addEventListener('click', () => switchTab('playlist'));
+      const currentVideo = STATE.queue[STATE.currentVideoIndex];
+      dom.quickSavePlaylistsList.innerHTML = '';
 
-      dom.nextBtn.addEventListener('click', playNext);
-      dom.prevBtn.addEventListener('click', playPrev);
-
-      // Shuffle Dynamic Toggle
-      dom.shuffleBtn.addEventListener('click', () => {
-        STATE.isShuffle = !STATE.isShuffle;
-        if (STATE.isShuffle) {
-          regenerateShuffleMap();
-          dom.shuffleStatusPill.textContent = 'ON';
-          dom.shuffleStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500 text-stone-950 uppercase tracking-wider';
-          dom.shuffleBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-2 text-amber-400 hover:text-amber-300';
-          showToast('Queue Shuffle Enabled');
-        } else {
-          dom.shuffleStatusPill.textContent = 'OFF';
-          dom.shuffleStatusPill.className = 'text-[10px] font-semibold px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 uppercase tracking-wider';
-          dom.shuffleBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-2 text-stone-400 hover:text-stone-200';
-          showToast('Shuffle Disabled');
-        }
-      });
-
-      // Clear Queue
-      document.getElementById('clear-queue-btn').addEventListener('click', () => {
-        STATE.queue = [];
-        STATE.currentVideoIndex = -1;
-        dom.iframe.src = '';
-        dom.emptyState.classList.remove('hidden');
-        dom.videoTitle.textContent = 'Select a video to play';
-        dom.videoChannel.textContent = '--';
-        persistState();
-        renderQueueUI();
-        showToast('Queue cleared');
-      });
-
-      // Save Queue as Playlist
-      document.getElementById('save-queue-as-playlist-btn').addEventListener('click', () => {
-        if (!STATE.queue.length) {
-          showToast('Queue is empty!', 'error');
-          return;
-        }
-        const name = prompt('Enter a name for this playlist:', `Gold Queue ${STATE.playlists.length + 1}`);
-        if (name && name.trim()) {
-          STATE.playlists.push({
-            name: name.trim(),
-            videos: [...STATE.queue]
-          });
+      STATE.playlists.forEach((pl, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'w-full text-left px-3 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 border border-amber-900/40 text-xs font-semibold text-amber-200 flex items-center justify-between transition';
+        btn.innerHTML = `<span>${escapeHtml(pl.name)}</span><span class="text-[11px] text-stone-400">${pl.videos.length} items</span>`;
+        btn.addEventListener('click', () => {
+          STATE.playlists[idx].videos.push(currentVideo);
           persistState();
           renderPlaylistsUI();
-          updateTopPlaylistDropdown();
-          showToast('Queue saved as playlist!');
-        }
+          dom.quickSaveModal.classList.add('hidden');
+          showToast(`Saved to "${pl.name}"`, 'success');
+        });
+        dom.quickSavePlaylistsList.appendChild(btn);
       });
 
-      // Add Currently Playing Video to Playlist via standard prompt fallback
-      document.getElementById('add-current-to-playlist-btn').addEventListener('click', () => {
-        if (STATE.currentVideoIndex >= 0 && STATE.queue[STATE.currentVideoIndex]) {
-          const currentVideo = STATE.queue[STATE.currentVideoIndex];
-          if (!STATE.playlists.length) {
-            showToast('No playlists found. Create one first!', 'error');
-            return;
-          }
-          const plNames = STATE.playlists.map((p, i) => `${i + 1}. ${p.name}`).join('\n');
-          const choice = prompt(`Select playlist number to add current video:\n${plNames}`);
-          const index = parseInt(choice, 10) - 1;
-          if (!isNaN(index) && STATE.playlists[index]) {
-            STATE.playlists[index].videos.push(currentVideo);
-            persistState();
-            renderPlaylistsUI();
-            updateTopPlaylistDropdown();
-            showToast(`Added to "${STATE.playlists[index].name}"`);
-          }
-        } else {
-          showToast('No active video playing', 'error');
-        }
-      });
-
-      // Modal Triggers
-      document.getElementById('open-settings-btn').addEventListener('click', () => {
-        dom.apiKeyInput.value = STATE.apiKey;
-        dom.apiModal.classList.remove('hidden');
-      });
-
-      document.getElementById('close-api-modal-btn').addEventListener('click', () => {
-        dom.apiModal.classList.add('hidden');
-      });
-
-      document.getElementById('save-api-key-btn').addEventListener('click', () => {
-        STATE.apiKey = dom.apiKeyInput.value.trim();
-        persistState();
-        updateApiStatusUI();
-        dom.apiModal.classList.add('hidden');
-        showToast('API Key saved!');
-      });
-
-      document.getElementById('clear-api-key-btn').addEventListener('click', () => {
-        STATE.apiKey = '';
-        dom.apiKeyInput.value = '';
-        persistState();
-        updateApiStatusUI();
-        dom.apiModal.classList.add('hidden');
-        showToast('API Key removed');
-      });
-
-      document.getElementById('create-playlist-btn').addEventListener('click', () => {
-        dom.playlistNameInput.value = '';
-        dom.playlistModal.classList.remove('hidden');
-      });
-
-      document.getElementById('close-playlist-modal-btn').addEventListener('click', () => {
-        dom.playlistModal.classList.add('hidden');
-      });
-
-      document.getElementById('save-new-playlist-btn').addEventListener('click', () => {
-        const name = dom.playlistNameInput.value.trim();
-        if (name) {
-          STATE.playlists.push({ name, videos: [] });
-          persistState();
-          renderPlaylistsUI();
-          updateTopPlaylistDropdown();
-          dom.playlistModal.classList.add('hidden');
-          showToast(`Created playlist "${name}"`);
-        }
-      });
-
-      // Edit Playlist Modal Event Handlers
-      dom.editPlaylistNameInput.addEventListener('change', () => {
-        if (STATE.editingPlaylistIndex >= 0 && STATE.playlists[STATE.editingPlaylistIndex]) {
-          const newName = dom.editPlaylistNameInput.value.trim();
-          if (newName) {
-            STATE.playlists[STATE.editingPlaylistIndex].name = newName;
-            persistState();
-            renderPlaylistsUI();
-            updateTopPlaylistDropdown();
-          }
-        }
-      });
-
-      document.getElementById('close-edit-playlist-modal-btn').addEventListener('click', () => {
-        dom.editPlaylistModal.classList.add('hidden');
-      });
-
-      document.getElementById('save-edit-playlist-btn').addEventListener('click', () => {
-        if (STATE.editingPlaylistIndex >= 0 && STATE.playlists[STATE.editingPlaylistIndex]) {
-          const newName = dom.editPlaylistNameInput.value.trim();
-          if (newName) {
-            STATE.playlists[STATE.editingPlaylistIndex].name = newName;
-          }
-          persistState();
-          renderPlaylistsUI();
-          updateTopPlaylistDropdown();
-        }
-        dom.editPlaylistModal.classList.add('hidden');
-        showToast('Playlist updated');
-      });
-
-      document.getElementById('delete-editing-playlist-btn').addEventListener('click', () => {
-        if (STATE.editingPlaylistIndex >= 0 && STATE.playlists[STATE.editingPlaylistIndex]) {
-          const name = STATE.playlists[STATE.editingPlaylistIndex].name;
-          STATE.playlists.splice(STATE.editingPlaylistIndex, 1);
-          STATE.editingPlaylistIndex = -1;
-          persistState();
-          renderPlaylistsUI();
-          updateTopPlaylistDropdown();
-          dom.editPlaylistModal.classList.add('hidden');
-          showToast(`Deleted playlist "${name}"`);
-        }
-      });
-    }
-
-    // App Initialization
-    window.addEventListener('DOMContentLoaded', () => {
-      updateApiStatusUI();
-      renderQueueUI();
-      renderPlaylistsUI();
-      updateTopPlaylistDropdown();
-      setupEventListeners();
+      dom.quickSaveModal.classList.remove('hidden');
     });
+
+    document.getElementById('close-quick-save-modal-btn').addEventListener('click', () => {
+      dom.quickSaveModal.classList.add('hidden');
+    });
+
+    // API Modal Controls
+    document.getElementById('open-settings-btn').addEventListener('click', () => {
+      dom.apiKeyInput.value = STATE.apiKey;
+      dom.apiModal.classList.remove('hidden');
+    });
+
+    document.getElementById('close-api-modal-btn').addEventListener('click', () => {
+      dom.apiModal.classList.add('hidden');
+    });
+
+    document.getElementById('save-api-key-btn').addEventListener('click', () => {
+      STATE.apiKey = dom.apiKeyInput.value.trim();
+      persistState();
+      updateApiStatusUI();
+      dom.apiModal.classList.add('hidden');
+      showToast('API Key saved', 'success');
+    });
+
+    document.getElementById('clear-api-key-btn').addEventListener('click', () => {
+      STATE.apiKey = '';
+      dom.apiKeyInput.value = '';
+      persistState();
+      updateApiStatusUI();
+      showToast('API Key removed');
+    });
+
+    // Create Playlist Modal Controls
+    document.getElementById('create-playlist-btn').addEventListener('click', () => {
+      dom.playlistNameInput.value = '';
+      dom.playlistModal.classList.remove('hidden');
+      dom.playlistNameInput.focus();
+    });
+
+    document.getElementById('close-playlist-modal-btn').addEventListener('click', () => {
+      dom.playlistModal.classList.add('hidden');
+    });
+
+    document.getElementById('save-new-playlist-btn').addEventListener('click', () => {
+      const name = dom.playlistNameInput.value.trim();
+      if (!name) {
+        showToast('Please enter a playlist name.', 'error');
+        return;
+      }
+      STATE.playlists.push({ name, videos: [] });
+      persistState();
+      renderPlaylistsUI();
+      dom.playlistModal.classList.add('hidden');
+      showToast(`Playlist "${name}" created`, 'success');
+    });
+
+    // Edit Playlist Modal Controls
+    document.getElementById('close-edit-playlist-modal-btn').addEventListener('click', () => {
+      dom.editPlaylistModal.classList.add('hidden');
+    });
+
+    document.getElementById('save-edit-playlist-btn').addEventListener('click', () => {
+      const playlist = STATE.playlists[STATE.editingPlaylistIndex];
+      if (playlist) {
+        const newName = dom.editPlaylistNameInput.value.trim();
+        if (newName) playlist.name = newName;
+        persistState();
+        renderPlaylistsUI();
+      }
+      dom.editPlaylistModal.classList.add('hidden');
+      showToast('Playlist updated');
+    });
+
+    document.getElementById('delete-editing-playlist-btn').addEventListener('click', () => {
+      if (STATE.editingPlaylistIndex !== -1) {
+        const deleted = STATE.playlists.splice(STATE.editingPlaylistIndex, 1);
+        STATE.editingPlaylistIndex = -1;
+        persistState();
+        renderPlaylistsUI();
+        dom.editPlaylistModal.classList.add('hidden');
+        showToast(`Deleted "${deleted[0].name}"`);
+      }
+    });
+
+    // --- Initial Boot ---
+    updateApiStatusUI();
+    renderQueueUI();
+    renderPlaylistsUI();
   </script>
 </body>
 </html>
